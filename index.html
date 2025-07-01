@@ -3,10 +3,610 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo GitHub Hosting</title>
+    <title>SDLC Role Journey Maps</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            background: #2c3e50;
+            margin: 0;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 20px;
+            background: #34495e;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+        }
+        
+        .tab-button:hover {
+            background: #2c3e50;
+        }
+        
+        .tab-button.active {
+            background: #3498db;
+            border-bottom-color: #2980b9;
+        }
+        
+        .tab-button.po { background: #e74c3c; }
+        .tab-button.po.active { background: #c0392b; border-bottom-color: #a93226; }
+        
+        .tab-button.ba { background: #f39c12; }
+        .tab-button.ba.active { background: #e67e22; border-bottom-color: #d35400; }
+        
+        .tab-button.dev { background: #27ae60; }
+        .tab-button.dev.active { background: #229954; border-bottom-color: #1e8449; }
+        
+        .tab-button.qc { background: #9b59b6; }
+        .tab-button.qc.active { background: #8e44ad; border-bottom-color: #7d3c98; }
+        
+        /* Journey Map Content */
+        .journey-content {
+            display: none;
+            padding: 0;
+        }
+        
+        .journey-content.active {
+            display: block;
+        }
+        
+        .journey-header {
+            padding: 30px;
+            color: white;
+            text-align: center;
+        }
+        
+        .po .journey-header { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .ba .journey-header { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .dev .journey-header { background: linear-gradient(135deg, #27ae60, #229954); }
+        .qc .journey-header { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        
+        .role-title {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .role-subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        /* Journey Map Table */
+        .journey-map {
+            margin: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .journey-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .phase-header {
+            background: #34495e;
+            color: white;
+            text-align: center;
+            padding: 15px 10px;
+            font-weight: bold;
+            font-size: 0.9em;
+            min-width: 180px;
+        }
+        
+        .row-label {
+            background: #ecf0f1;
+            padding: 15px;
+            font-weight: bold;
+            color: #2c3e50;
+            width: 150px;
+            vertical-align: top;
+            font-size: 1em;
+            text-align: center;
+        }
+        
+        .cell {
+            padding: 15px;
+            border: 1px solid #bdc3c7;
+            vertical-align: top;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .jobs { background: #f8f9fa; }
+        .pain-points { background: #fff5f5; }
+        .desired-outcomes { background: #f0fff4; }
+        
+        .cell ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .cell li {
+            margin: 8px 0;
+            padding: 10px 12px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+        
+        .jobs li { 
+            border-left-color: #3498db;
+            background: #f7fbff;
+        }
+        .pain-points li { 
+            border-left-color: #e74c3c;
+            background: #fef7f7;
+        }
+        .desired-outcomes li { 
+            border-left-color: #27ae60;
+            background: #f7fef9;
+        }
+        
+        .pain-emoji {
+            color: #e74c3c;
+            font-size: 1.1em;
+            margin-right: 5px;
+        }
+        
+        .desire-emoji {
+            color: #27ae60;
+            font-size: 1.1em;
+            margin-right: 5px;
+        }
+        
+        .job-emoji {
+            color: #3498db;
+            font-size: 1.1em;
+            margin-right: 5px;
+        }
+        
+        .highlight {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        @media (max-width: 1200px) {
+            .journey-table {
+                font-size: 0.9em;
+            }
+            
+            .phase-header {
+                padding: 10px 5px;
+                font-size: 0.8em;
+                min-width: 150px;
+            }
+            
+            .cell {
+                padding: 10px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .tab-nav {
+                flex-wrap: wrap;
+            }
+            
+            .tab-button {
+                min-width: 50%;
+                font-size: 1em;
+                padding: 15px;
+            }
+            
+            .journey-map {
+                margin: 10px;
+                overflow-x: auto;
+            }
+            
+            .journey-table {
+                min-width: 900px;
+            }
+            
+            .row-label {
+                width: 120px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Chào mừng bạn đến với dự án GitHub Hosting!</h1>
-    <p>Đây là một trang web đơn giản được lưu trữ trên GitHub Pages.</p>
+    <div class="container">
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-button po active" onclick="showRole('po')">
+                👑 Product Owner
+            </button>
+            <button class="tab-button ba" onclick="showRole('ba')">
+                📊 Business Analyst
+            </button>
+            <button class="tab-button dev" onclick="showRole('dev')">
+                💻 Developer
+            </button>
+            <button class="tab-button qc" onclick="showRole('qc')">
+                🧪 Quality Control
+            </button>
+        </div>
+        
+        <!-- Product Owner Journey -->
+        <div id="po" class="journey-content po active">
+            <div class="journey-header">
+                <div class="role-title">👑 Product Owner</div>
+                <div class="role-subtitle">Quản lý sản phẩm và yêu cầu từ khách hàng</div>
+            </div>
+            
+            <div class="journey-map">
+                <table class="journey-table">
+                    <tr>
+                        <th class="row-label"></th>
+                        <th class="phase-header">TIẾP NHẬN & HIỂU<br><small>Nhận yêu cầu từ khách hàng</small></th>
+                        <th class="phase-header">BÓC TÁCH TASK<br><small>Phân tách yêu cầu thành task</small></th>
+                        <th class="phase-header">REVIEW & KIỂM SOÁT<br><small>Review code và tài liệu</small></th>
+                    </tr>
+                    
+                    <tr>
+                        <td class="row-label">JOBS</td>
+                        <td class="cell jobs">
+                            <ul>
+                                <li><span class="job-emoji">📋</span>Đọc và phân tích tài liệu SRS từ khách hàng</li>
+                                <li><span class="job-emoji">🔍</span>Tìm hiểu cấu trúc code cũ và nghiệp vụ phức tạp</li>
+                                <li><span class="job-emoji">📖</span>Nghiên cứu tài liệu hệ thống hiện tại</li>
+                            </ul>
+                        </td>
+                        <td class="cell jobs">
+                            <ul>
+                                <li><span class="job-emoji">✂️</span>Phân tách yêu cầu thành các task cụ thể</li>
+                                <li><span class="job-emoji">📝</span>Viết user stories và acceptance criteria</li>
+                                <li><span class="job-emoji">⏰</span>Estimate effort cho từng task</li>
+                            </ul>
+                        </td>
+                        <td class="cell jobs">
+                            <ul>
+                                <li><span class="job-emoji">👀</span>Review code do thiếu developer giàu kinh nghiệm</li>
+                                <li><span class="job-emoji">📄</span>Review tài liệu kỹ thuật từ team</li>
+                                <li><span class="job-emoji">✅</span>Đảm bảo chất lượng sản phẩm</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="row-label">PAIN POINTS</td>
+                        <td class="cell pain-points">
+                            <ul>
+                                <li><span class="pain-emoji">⚠️</span><span class="highlight">Cấu trúc code cũ, nghiệp vụ phức tạp và thiếu tài liệu</span> gây mất nhiều thời gian tìm hiểu</li>
+                            </ul>
+                        </td>
+                        <td class="cell pain-points">
+                            <ul>
+                                <li><span class="pain-emoji">⚠️</span><span class="highlight">Cấu trúc code cũ, nghiệp vụ phức tạp và thiếu tài liệu</span> gây mất thời gian bóc task</li>
+                            </ul>
+                        </td>
+                        <td class="cell pain-points">
+                            <ul>
+                                <li><span class="pain-emoji">⚠️</span><span class="highlight">Thiếu dev cứng</span> nên mất thời gian review code và tài liệu</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="row-label">DESIRED OUTCOMES</td>
+                        <td class="cell desired-outcomes">
+                            <ul>
+                                <li><span class="desire-emoji">✅</span><span class="highlight">AI phân tích tài liệu, codebase</span> để hiểu nhanh nghiệp vụ và cấu trúc hệ thống</li>
+                            </ul>
+                        </td>
+                        <td class="cell desired-outcomes">
+                            <ul>
+                                <li><span class="desire-emoji">✅</span><span class="highlight">AI phân tích tài liệu, codebase → tạo task</span> tự động từ yêu cầu</li>
+                            </ul>
+                        </td>
+                        <td class="cell desired-outcomes">
+                            <ul>
+                                <li><span class="desire-emoji">✅</span><span class="highlight">AI review code và tài liệu</span> thay thế cho developer experience thiếu hụt</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Business Analyst Journey -->
+        <div id="ba" class="journey-content ba">
+            <div class="journey-header">
+                <div class="role-title">📊 Business Analyst</div>
+                <div class="role-subtitle">Phân tích nghiệp vụ và thiết kế hệ thống</div>
+            </div>
+            
+            <div class="journey-map">
+                <table class="journey-table">
+                    <tr>
+                        <th class="row-label"></th>
+                        <th class="phase-header">TÌM HIỂU DOMAIN<br><small>Nghiên cứu lĩnh vực mới</small></th>
+                        <th class="phase-header">ONBOARDING<br><small>Tìm hiểu hệ thống</small></th>
+                        <th class="phase-header">THIẾT KẾ UI<br><small>Design giao diện</small></th>
+                    </tr>
+                    
+                    <tr>
+                        <td class="row-label">JOBS</td>
+                        <td class="cell jobs">
+                            <ul>
+                                <li><span class="job-emoji">🔍</span>Nghiên cứu tri thức về domain của dự án mới</li>
+                                <li><span class="job-emoji">📚</span>Tìm hiểu business rules và quy trình</li>
+                                <li><span class="job-emoji">🤝</span>Phỏng vấn stakeholders và subject matter experts</li>
+                            </ul>
+                        </td>
+                        <td class="cell jobs">
+                            <ul>
+                                <li><span class="job-emoji">📖</span>Đọc tài liệu tổng quan về hệ thống hiện tại</li>
+                                <li><span class="job-emoji">🎓</span>Onboarding bản thân vào dự án</li>
+                                <li><span class="job-emoji">👥</span>Hỗ trợ các thành viên mới khác</li>
+                            </ul>
+                        </td>
+                        <td class="cell jobs">
+                            <ul>
+                                <li><span class="job-emoji">🎨</span>Thiết kế giao diện cho các màn hình</li>
+                                <li><span class="job-emoji">🔄</span>Điều chỉnh design khi có thay đổi yêu cầu</li>
+                                <li><span class="job-emoji">📱</span>Đảm bảo tính nhất quán UI/UX</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="row-label">PAIN POINTS</td>
+                        <td class="cell pain-points">
+                            <ul>
+                                <li><span class="pain-emoji">⚠️</span><span class="highlight">Thiếu tri thức về domain</span> của dự án mới gây mất thời gian làm rõ</li>
+                            </ul>
+                        </td>
+                        <td class="cell pain-points">
+                            <ul>
+                                <li><span class="pain-emoji">⚠️</span><span class="highlight">Thiếu tài liệu tổng quan</span> gây mất thời gian onboarding và hỗ trợ thêm từ thành viên khác</li>
+                            </ul>
+                        </td>
+                        <td class="cell pain-points">
+                            <ul>
+                                <li><span class="pain-emoji">⚠️</span><span class="highlight">Thiết kế giao diện tốn thời gian</span>, mỗi thay đổi nhỏ cần sửa lại nhiều màn hình</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="row-label">DESIRED OUTCOMES</td>
+                        <td class="cell desired-outcomes">
+                            <ul>
+                                <li><span class="desire-emoji">✅</span><span class="highlight">Có nguồn cung cấp tài liệu hiệu quả</span> về domain knowledge</li>
+                            </ul>
+                        </td>
+                        <td class="cell desired-outcomes">
+                            <ul>
+                                <li><span class="desire-emoji">✅</span><span class="highlight">Có tài liệu tổng quan về hệ thống</span> cần làm để onboarding nhanh</li>
+                            </ul>
+                        </td>
+                        <td class="cell desired-outcomes">
+                            <ul>
+                                <li><span class="desire-emoji">✅</span><span class="highlight">Giảm nỗ lực design</span> với tools tự động và template</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Developer Journey -->
+        <div id="dev" class="journey-content dev">
+            <div class="journey-header">
+                <div class="role-title">💻 Developer</div>
+                <div class="role-subtitle">Phát triển phần mềm và maintain codebase</div>
+            </div>
+            
+            <div class="journey-map">
+                <table class="journey-table">
+                    <tr>
+                        <th class="row-label"></th>
+                        <th class="phase-header">TÌM HIỂU CODEBASE<br><small>Hiểu hệ thống hiện tại</small></th>
+                        <th class="phase-header">DEVELOPMENT<br><small>Viết code và documentation</small></th>
+                        <th class="phase-header">REVIEW PROCESS<br><small>Review tài liệu và code</small></th>
+                    </tr>
+                    
+                    <tr>
+                        <td class="row-label">JOBS</td>
+                        <td class="cell jobs">
+                            <ul>
+                                <li><span class="job-emoji">🔍</span>Nghiên cứu cấu trúc code cũ và nghiệp vụ</li>
+                                <li><span class="job-emoji">📖</span>Đọc tài liệu kỹ thuật hiện có</li>
+                                <li><span class="job-emoji">🧩</span>Hiểu logic business trong legacy code</li>
+                            </ul>
+                        </td>
+                        <td class="cell jobs">
+                            <ul>
+                                <li><span class="job-emoji">💻</span>Tập trung vào việc coding</li>
+                                <li><span class="job-emoji">📝</span>Viết tài liệu cho code mới</li>
+                                <li><span class="job-emoji">🔄</span>Cập nhật tài liệu khi code thay đổi</li>
+                            </ul>
+                        </td>
+                        <td class="cell jobs">
+                            <ul>
+                                <li><span class="job-emoji">👀</span>Review tài liệu của team members</li>
+                                <li><span class="job-emoji">🔍</span>Review source code cho quality assurance</li>
+                                <li><span class="job-emoji">✅</span>Ensure code standards và best practices</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="row-label">PAIN POINTS</td>
+                        <td class="cell pain-points">
+                            <ul>
+                                <li><span class="pain-emoji">⚠️</span><span class="highlight">Cấu trúc code cũ, nghiệp vụ phức tạp và thiếu tài liệu</span> gây mất nhiều thời gian tìm hiểu</li>
+                            </ul>
+                        </td>
+                        <td class="cell pain-points">
+                            <ul>
+                                <li><span class="pain-emoji">⚠️</span><span class="highlight">Tập trung vào code hơn</span> dẫn đến việc viết tài liệu mất thời gian</li>
+                                <li><span class="pain-emoji">⚠️</span><span class="highlight">Mất thời gian để cập nhật tài liệu</span> theo source code khi có thay đổi</li>
+                            </ul>
+                        </td>
+                        <td class="cell pain-points">
+                            <ul>
+                                <li><span class="pain-emoji">⚠️</span><span class="highlight">Mất thời gian review</span> tài liệu, source code</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="row-label">DESIRED OUTCOMES</td>
+                        <td class="cell desired-outcomes">
+                            <ul>
+                                <li><span class="desire-emoji">✅</span><span class="highlight">AI phân tích tài liệu, codebase</span> để hiểu nhanh hệ thống</li>
+                            </ul>
+                        </td>
+                        <td class="cell desired-outcomes">
+                            <ul>
+                                <li><span class="desire-emoji">✅</span><span class="highlight">AI cập nhật tài liệu từ code mới</span> tự động</li>
+                            </ul>
+                        </td>
+                        <td class="cell desired-outcomes">
+                            <ul>
+                                <li><span class="desire-emoji">✅</span><span class="highlight">AI hỗ trợ review tài liệu, source code</span> thay cho manual review</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Quality Control Journey -->
+        <div id="qc" class="journey-content qc">
+            <div class="journey-header">
+                <div class="role-title">🧪 Quality Control</div>
+                <div class="role-subtitle">Đảm bảo chất lượng sản phẩm và quy trình testing</div>
+            </div>
+            
+            <div class="journey-map">
+                <table class="journey-table">
+                    <tr>
+                        <th class="row-label"></th>
+                        <th class="phase-header">ONBOARDING DỰ ÁN<br><small>Tham gia dự án mới</small></th>
+                        <th class="phase-header">THEO DÕI THAY ĐỔI<br><small>Monitor requirements</small></th>
+                        <th class="phase-header">CẬP NHẬT TESTCASE<br><small>Maintain test materials</small></th>
+                    </tr>
+                    
+                    <tr>
+                        <td class="row-label">JOBS</td>
+                        <td class="cell jobs">
+                            <ul>
+                                <li><span class="job-emoji">🎓</span>Onboard nhân viên mới vào dự án</li>
+                                <li><span class="job-emoji">📚</span>Học hỏi về nghiệp vụ và quy trình</li>
+                                <li><span class="job-emoji">📋</span>Setup testing environment và tools</li>
+                            </ul>
+                        </td>
+                        <td class="cell jobs">
+                            <ul>
+                                <li><span class="job-emoji">👀</span>Monitor tài liệu đầu vào update liên tục</li>
+                                <li><span class="job-emoji">🔍</span>Nắm bắt các thay đổi requirements</li>
+                                <li><span class="job-emoji">📊</span>Track impact của changes lên testing</li>
+                            </ul>
+                        </td>
+                        <td class="cell jobs">
+                            <ul>
+                                <li><span class="job-emoji">📝</span>Update testcase theo thay đổi yêu cầu</li>
+                                <li><span class="job-emoji">📖</span>Cập nhật tài liệu HDSD (Hướng dẫn sử dụng)</li>
+                                <li><span class="job-emoji">✋</span>Thực hiện bằng tay do thiếu automation</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="row-label">PAIN POINTS</td>
+                        <td class="cell pain-points">
+                            <ul>
+                                <li><span class="pain-emoji">⚠️</span><span class="highlight">Mất thời gian onboard cho nhân viên</span> khi tham gia vào dự án mới do chưa có chương trình onboarding hiệu quả</li>
+                            </ul>
+                        </td>
+                        <td class="cell pain-points">
+                            <ul>
+                                <li><span class="pain-emoji">⚠️</span><span class="highlight">QC không nắm được hết thay đổi</span> do tài liệu đầu vào update liên tục</li>
+                            </ul>
+                        </td>
+                        <td class="cell pain-points">
+                            <ul>
+                                <li><span class="pain-emoji">⚠️</span><span class="highlight">Mất nhiều thời gian update testcase, TL HDSD</span> do đang thực hiện bằng tay và yêu cầu thay đổi liên tục</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="row-label">DESIRED OUTCOMES</td>
+                        <td class="cell desired-outcomes">
+                            <ul>
+                                <li><span class="desire-emoji">✅</span><span class="highlight">AI hỗ trợ onboard</span> nhân viên mới một cách hiệu quả</li>
+                            </ul>
+                        </td>
+                        <td class="cell desired-outcomes">
+                            <ul>
+                                <li><span class="desire-emoji">✅</span><span class="highlight">AI tự động update testcase theo đầu vào</span> khi có thay đổi</li>
+                            </ul>
+                        </td>
+                        <td class="cell desired-outcomes">
+                            <ul>
+                                <li><span class="desire-emoji">✅</span><span class="highlight">AI tự động tạo và cập nhật testcase, tài liệu HDSD</span></li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showRole(roleId) {
+            // Hide all journey contents
+            const allContents = document.querySelectorAll('.journey-content');
+            allContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const allButtons = document.querySelectorAll('.tab-button');
+            allButtons.forEach(button => button.classList.remove('active'));
+            
+            // Show selected content and activate button
+            document.getElementById(roleId).classList.add('active');
+            document.querySelector(`.tab-button.${roleId}`).classList.add('active');
+        }
+        
+        // Initialize with PO tab active
+        document.addEventListener('DOMContentLoaded', function() {
+            showRole('po');
+        });
+    </script>
 </body>
 </html>
