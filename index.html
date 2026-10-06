@@ -1,1542 +1,507 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SDLC Role Journey Maps - Final Version</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-        
-        /* Tab Navigation */
-        .tab-nav {
-            display: flex;
-            background: #2c3e50;
-            margin: 0;
-        }
-        
-        .tab-button {
-            flex: 1;
-            padding: 20px;
-            background: #34495e;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 1.1em;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            border-bottom: 4px solid transparent;
-        }
-        
-        .tab-button:hover {
-            background: #2c3e50;
-            transform: translateY(-2px);
-        }
-        
-        .tab-button.active {
-            background: #3498db;
-            border-bottom-color: #2980b9;
-            transform: translateY(-2px);
-        }
-        
-        .tab-button.po { background: #e74c3c; }
-        .tab-button.po.active { background: #c0392b; border-bottom-color: #a93226; }
-        
-        .tab-button.ba { background: #f39c12; }
-        .tab-button.ba.active { background: #e67e22; border-bottom-color: #d35400; }
-        
-        .tab-button.dev { background: #27ae60; }
-        .tab-button.dev.active { background: #229954; border-bottom-color: #1e8449; }
-        
-        .tab-button.qc { background: #9b59b6; }
-        .tab-button.qc.active { background: #8e44ad; border-bottom-color: #7d3c98; }
-        
-        /* Journey Map Content */
-        .journey-content {
-            display: none;
-            padding: 0;
-        }
-        
-        .journey-content.active {
-            display: block;
-        }
-        
-        .journey-header {
-            padding: 30px;
-            color: white;
-            text-align: center;
-            position: relative;
-        }
-        
-        .po .journey-header { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .ba .journey-header { background: linear-gradient(135deg, #f39c12, #e67e22); }
-        .dev .journey-header { background: linear-gradient(135deg, #27ae60, #229954); }
-        .qc .journey-header { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
-        
-        .role-title {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .role-subtitle {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-        
-        /* Enhanced Journey Map */
-        .journey-map {
-            margin: 20px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .journey-phases {
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            flex-wrap: wrap;
-        }
-        
-        .phase-column {
-            flex: 1;
-            min-width: 350px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            overflow: hidden;
-            transition: transform 0.3s ease;
-            border: 3px solid transparent;
-        }
-        
-        .phase-column:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
-            border-color: #3498db;
-        }
-        
-        .phase-header {
-            background: linear-gradient(135deg, #34495e, #2c3e50);
-            color: white;
-            text-align: center;
-            padding: 25px 20px;
-            font-weight: bold;
-            font-size: 1em;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .phase-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: left 0.5s;
-        }
-        
-        .phase-column:hover .phase-header::before {
-            left: 100%;
-        }
-        
-        .phase-title {
-            font-size: 1.3em;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .phase-subtitle {
-            font-size: 0.9em;
-            opacity: 0.8;
-            font-style: italic;
-        }
-        
-        .phase-content {
-            padding: 0;
-        }
-        
-        .content-section {
-            padding: 25px;
-            border-bottom: 2px solid #ecf0f1;
-        }
-        
-        .content-section:last-child {
-            border-bottom: none;
-        }
-        
-        .section-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            font-weight: bold;
-            font-size: 1.2em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 15px 0;
-            border-bottom: 3px solid;
-            position: relative;
-        }
-        
-        .section-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            font-size: 1.1em;
-            color: white;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-        }
-        
-        .jobs .section-header { 
-            color: #3498db; 
-            border-bottom-color: #3498db;
-            background: linear-gradient(90deg, #f7fbff, transparent);
-        }
-        .jobs .section-icon { background: linear-gradient(135deg, #3498db, #2980b9); }
-        
-        .pain-points .section-header { 
-            color: #e74c3c; 
-            border-bottom-color: #e74c3c;
-            background: linear-gradient(90deg, #fef7f7, transparent);
-        }
-        .pain-points .section-icon { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        
-        .desired-outcomes .section-header { 
-            color: #27ae60; 
-            border-bottom-color: #27ae60;
-            background: linear-gradient(90deg, #f7fef9, transparent);
-        }
-        .desired-outcomes .section-icon { background: linear-gradient(135deg, #27ae60, #229954); }
-        
-        .content-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .content-item {
-            margin: 15px 0;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 5px solid;
-            font-size: 0.95em;
-            line-height: 1.6;
-            position: relative;
-            transition: all 0.3s ease;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        
-        .content-item:hover {
-            transform: translateX(8px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .jobs .content-item { 
-            border-left-color: #3498db;
-            background: linear-gradient(135deg, #f7fbff, #ffffff);
-        }
-        
-        .pain-points .content-item { 
-            border-left-color: #e74c3c;
-            background: linear-gradient(135deg, #fef7f7, #ffffff);
-        }
-        
-        .desired-outcomes .content-item { 
-            border-left-color: #27ae60;
-            background: linear-gradient(135deg, #f7fef9, #ffffff);
-        }
-        
-        .item-number {
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #34495e, #2c3e50);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8em;
-            font-weight: bold;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            border: 2px solid white;
-        }
-        
-        .item-emoji {
-            font-size: 1.2em;
-            margin-right: 10px;
-        }
-        
-        .highlight {
-            background: linear-gradient(120deg, #ffeb3b 0%, #ffeb3b 100%);
-            background-size: 100% 40%;
-            background-repeat: no-repeat;
-            background-position: 0 75%;
-            font-weight: 700;
-            color: #2c3e50;
-            padding: 2px 4px;
-            border-radius: 3px;
-        }
-        
-        /* Connection Lines */
-        .connection-indicator {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px 0;
-            color: #7f8c8d;
-            font-size: 0.85em;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .connection-arrow {
-            margin: 0 15px;
-            font-size: 1.8em;
-            color: #3498db;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        /* Summary Panel */
-        .summary-panel {
-            background: linear-gradient(135deg, #2c3e50, #34495e);
-            color: white;
-            padding: 25px;
-            margin: 20px;
-            border-radius: 12px;
-            border: 3px solid #3498db;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
-        
-        .summary-title {
-            font-size: 1.3em;
-            font-weight: bold;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .summary-icon {
-            margin-right: 12px;
-            font-size: 1.8em;
-        }
-        
-        .summary-content {
-            line-height: 1.7;
-            font-size: 1.05em;
-        }
-        
-        .summary-content strong {
-            color: #f39c12;
-            font-weight: 700;
-        }
-        
-        .summary-content em {
-            color: #e74c3c;
-            font-style: normal;
-            font-weight: 600;
-        }
-        
-        @media (max-width: 1600px) {
-            .journey-phases {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .phase-column {
-                margin-bottom: 10px;
-                min-width: auto;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .tab-nav {
-                flex-wrap: wrap;
-            }
-            
-            .tab-button {
-                min-width: 50%;
-                font-size: 1em;
-                padding: 15px;
-            }
-            
-            .journey-map {
-                margin: 10px;
-            }
-            
-            .content-item {
-                font-size: 0.9em;
-                padding: 15px;
-            }
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prototype — Báo cáo doanh nghiệp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Token lấy từ egift-ui-lib/src/styles/tokens.css và main.css của Business Portal */
+:root{
+  --primary:#e41b23;--primary-hover:#c8141b;--primary-soft:#fdecec;--primary-text:#d4151d;
+  --text:#1f1f1f;--text-2:#595959;--label:#666;
+  --page:#f4f4f4;--card:#fff;--muted:#f5f5f5;--border:#e5e5e5;--border-strong:#d9d9d9;
+  --field-r:12px;--card-r:16px;
+  --th-bg:#f5f5f5;--th-text:#404040;
+  --ok-bg:#e3f4f1;--ok-t:#1e7a6a;--warn-bg:#fff4d6;--warn-t:#8a5a00;--info-bg:#e3e8fb;--info-t:#3a4fb3;--sky-bg:#e0f2fe;--sky-t:#026aa2;
+  --danger-bg:#fde4ea;--danger-t:#c2185b;
+  --nav-active:#fdecef;--nav-shadow:0 8px 20px rgba(20,41,61,.08);--hdr-border:#e8ecf1;
+  /* màu chart: dùng lại màu trạng thái của lib */
+  --c1:#3a4fb3;--c2:#e41b23;--c3:#1e7a6a;--c4:#b54708;--c5:#a3a3a3;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,'Segoe UI',Arial,sans-serif;color:var(--text);background:var(--page);font-size:14px}
+button{font-family:inherit}
+.proto-bar{position:sticky;top:0;z-index:20;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 16px;background:#262626;color:#fff;font-size:12px}
+.proto-bar button{border:1px solid #555;background:#333;color:#fff;border-radius:999px;padding:4px 12px;cursor:pointer;font-size:12px}
+.proto-bar button.on{background:#fff;color:#111;border-color:#fff}
+.proto-bar .sep{width:1px;height:16px;background:#555;margin:0 4px}
+.shell{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:calc(100vh - 41px)}
+.side{background:#fff;padding:16px 14px;display:flex;flex-direction:column;gap:16px}
+.side-top{display:flex;justify-content:space-between;align-items:center;min-height:40px}
+.side-top img:first-child{height:34px}
+.nav{display:flex;flex-direction:column;gap:8px}
+.nl{display:flex;align-items:center;gap:12px;min-height:52px;padding:10px 12px;border-radius:14px;color:#424242;font-size:14px;font-weight:600;border:0;background:transparent;width:100%;text-align:left;cursor:pointer;text-decoration:none}
+.nl svg{width:20px;height:20px;flex-shrink:0;opacity:.86}
+.nl:hover,.nl.act{background:var(--nav-active);box-shadow:var(--nav-shadow)}
+.nl.act svg{color:var(--primary);opacity:1}
+.nl .grow{flex:1}
+.kids{display:flex;flex-direction:column;gap:4px;margin:6px 0 0;padding-left:12px}
+.sl{display:flex;align-items:center;min-height:40px;padding:8px 12px;border-radius:12px;color:#6b7785;font-size:13px;font-weight:500;text-decoration:none;cursor:pointer;border:0;background:none;width:100%;text-align:left}
+.sl:hover{background:var(--nav-active)}
+.sl.act{background:var(--nav-active);color:#000;font-weight:600}
+.newtag{font-size:10px;font-weight:700;color:#fff;background:var(--primary);border-radius:999px;padding:1px 6px}
+.right{display:grid;grid-template-rows:64px minmax(0,1fr);min-width:0}
+.hdr{display:flex;justify-content:flex-end;align-items:center;gap:20px;padding:0 24px;background:#fff;border-bottom:1px solid var(--hdr-border)}
+.user{display:flex;gap:10px;align-items:center}
+.av{width:40px;height:40px;border-radius:12px;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}
+.un{font-weight:700;font-size:14px;line-height:1.2}.ur{font-size:12px;color:var(--text-2)}
+main{padding:24px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ph h1{margin:0;font-size:30px;font-weight:700}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border-strong);background:#fff;color:var(--text)}
+.btn.pri{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn.pri:hover{background:var(--primary-hover)}
+.btn.sm{padding:6px 14px;font-size:13px}
+.btn svg{width:16px;height:16px}
+.btn[disabled]{background:#ebebeb;color:#a3a3a3;border-color:#e0e0e0;cursor:not-allowed}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--card-r);padding:20px;display:flex;flex-direction:column;gap:16px}
+.card h3{margin:0;font-size:16px;font-weight:700}
+.card .sub{font-size:12px;color:var(--text-2);margin-top:-12px}
+.tabs{display:flex;gap:24px;border-bottom:1px solid var(--border)}
+.tab{padding:10px 2px 12px;border:0;background:none;font-size:14px;font-weight:600;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab.act{color:var(--primary-text);border-bottom-color:var(--primary)}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.fld{background:var(--muted);border:1px solid var(--border);border-radius:var(--field-r);padding:8px 14px;min-height:56px;display:flex;flex-direction:column;justify-content:center}
+.fld label{font-size:12px;color:var(--label)}
+.fld .v{font-size:14px;display:flex;justify-content:space-between;align-items:center}
+.fld svg{width:16px;height:16px;color:#777}
+.hint{font-size:12px;color:var(--text-2);margin:0}
+.actions{display:flex;justify-content:flex-end;gap:8px}
+.tw{overflow:auto;border:1px solid var(--border-strong);border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:var(--th-bg);color:var(--th-text);font-weight:600;padding:12px 14px;text-align:left;border-bottom:1px solid var(--border-strong);white-space:nowrap}
+td{padding:14px;border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:0}
+.r{text-align:right}
+tr.tot td{background:var(--muted);font-weight:700}
+tbody tr:hover td{background:#fafafa}
+.badge{display:inline-block;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:600}
+.b-ok{background:var(--ok-bg);color:var(--ok-t)}.b-warn{background:var(--warn-bg);color:var(--warn-t)}.b-info{background:var(--info-bg);color:var(--info-t)}.b-sky{background:var(--sky-bg);color:var(--sky-t)}.b-orange{background:#ffebdd;color:#b54708}.b-neutral{background:#e5e5e5;color:#525252}.b-red{background:var(--danger-bg);color:var(--danger-t)}
+.alert{display:flex;gap:12px;align-items:center;justify-content:space-between;border-radius:12px;padding:12px 16px;font-size:14px;background:#fde4ea;color:#9f1239}
+.empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:48px 0;color:var(--text-2);text-align:center}
+.empty img{width:120px}
+.skel{height:14px;border-radius:6px;background:linear-gradient(90deg,#eee,#f7f7f7,#eee);background-size:200% 100%;animation:sh 1.2s infinite}
+.skelbox{height:220px;border-radius:12px;background:linear-gradient(90deg,#eee,#f7f7f7,#eee);background-size:200% 100%;animation:sh 1.2s infinite}
+@keyframes sh{to{background-position:-200% 0}}
+.note{border:1px dashed var(--border-strong);border-radius:12px;padding:12px 16px;font-size:12px;color:var(--text-2);background:#fffdf5}
+.note b{color:var(--text)}
+.p403{display:grid;place-items:center;padding:96px 0;text-align:center;gap:8px}
+.p403 h2{font-size:40px;margin:0}
+.hide{display:none!important}
+.sec{display:flex;flex-direction:column;gap:12px}.sec>h3{margin:0;font-size:16px;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.stat{display:flex;flex-direction:column;min-width:0;border:1px solid var(--border);border-radius:16px;background:#fff;padding:16px}
+.stat .l{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--text-2)}
+.stat .l i{width:8px;height:8px;border-radius:50%;background:currentColor;flex-shrink:0}
+.stat .v{margin-top:6px;font-size:20px;font-weight:700;color:var(--text);white-space:nowrap}
+.pills{display:inline-flex;gap:4px;background:var(--muted);border-radius:999px;padding:4px;width:fit-content}
+.pill{border:0;background:transparent;border-radius:999px;padding:6px 16px;font-size:13px;font-weight:600;color:var(--text-2);cursor:pointer}
+.pill.act{background:#404040;color:#fff}
+.frow{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.frow .lb{font-size:12px;color:var(--text-2)}
+.stat .bd{margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);display:grid;grid-template-columns:1fr auto;gap:2px 8px;font-size:12px;color:var(--text-2)}
+.stat .bd b{color:var(--text);text-align:right}
+.stat .bd .zero,.stat .bd .zero b{color:#a3a3a3}
+.sev{background:#fde4ea;color:#c2185b}
+.stats5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.stat .h{margin-top:4px;font-size:12px;color:var(--text-2)}
+.thead-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.thead-row h3{margin:0;font-size:16px;font-weight:700}
+.thead-row .cnt{font-weight:400;color:var(--text-2);font-size:13px;margin-left:6px}
+.tools{display:flex;gap:8px;align-items:center;position:relative}
+.btn.tool{border-radius:8px;padding:0 12px;height:32px;font-size:13px;font-weight:500}
+.colpanel{position:absolute;right:0;top:40px;z-index:10;width:240px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:6px 0;box-shadow:0 10px 24px rgba(17,24,39,.12)}
+.colpanel p{margin:0;padding:6px 12px 4px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-2)}
+.colpanel .list{max-height:320px;overflow:auto}
+.colpanel button.opt{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border:0;background:none;text-align:left;font-size:14px;cursor:pointer}
+.colpanel button.opt:hover{background:var(--muted)}
+.colpanel button.opt[disabled]{cursor:not-allowed;opacity:.6}
+.cb{width:16px;height:16px;border-radius:4px;border:1.5px solid #8c8c8c;display:grid;place-items:center;flex-shrink:0;color:#fff}
+.cb.on{background:var(--primary);border-color:var(--primary)}
+.colpanel .foot{display:flex;justify-content:space-between;border-top:1px solid var(--border);margin-top:4px;padding:8px 12px 4px}
+.colpanel .foot button{border:0;background:none;font-size:13px;font-weight:500;cursor:pointer}
+.warnbar{display:flex;gap:10px;align-items:center;border-radius:12px;padding:12px 16px;font-size:14px;background:var(--warn-bg);color:var(--warn-t)}
+.search{display:flex;align-items:center;gap:8px;background:var(--muted);border:1px solid var(--border);border-radius:var(--field-r);padding:0 14px;min-height:56px;grid-column:span 2}
+.search svg{width:16px;height:16px;color:#777;flex-shrink:0}
+.search .tx{display:flex;flex-direction:column}
+.search label{font-size:12px;color:var(--label)}
+.search input{border:0;background:transparent;outline:none;font:inherit;font-size:14px;width:100%;padding:0;color:var(--text)}
+.search input::placeholder{color:#6b6b6b}
+.search:focus-within{border-color:#f18a8e;box-shadow:0 0 0 3px rgba(228,27,35,.12)}
+.search .x{border:0;background:none;cursor:pointer;color:#777;font-size:16px;display:none}
+.search.has .x{display:block}
+.lnk{color:var(--link);font-weight:600;text-decoration:none}.lnk:hover{text-decoration:underline}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--text-2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.chart{width:100%;height:220px}
+.donutwrap{display:flex;align-items:center;gap:24px;min-height:220px}
+.donutwrap .legend{flex-direction:column;gap:10px;font-size:13px}
+.leg2{display:grid!important;grid-template-columns:repeat(2,minmax(0,auto));gap:8px 24px!important}
+.donutwrap b{color:var(--text)}
+@media(max-width:1200px){.stats5{grid-template-columns:repeat(3,minmax(0,1fr))}.stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:1000px){.grid4,.grid2{grid-template-columns:repeat(2,1fr)}}
+
+/* ---- Đồng bộ với egift-ui-lib và các màn Business Portal hiện có ---- */
+.tabs{gap:24px;border-bottom:1px solid var(--border)}
+.tab{padding:8px 4px 12px;font-size:16px;font-weight:500;color:var(--text-2)}
+.tab.act{color:var(--primary-text)}
+.pills{display:flex;flex-wrap:wrap;gap:12px;background:none;padding:0;border-radius:0;width:auto}
+.pill{border-radius:8px;padding:6px 10px;font-size:13px;font-weight:500;background:var(--muted);color:var(--text-2)}
+.pill:hover{background:var(--border)}
+.pill.act{background:#404040;color:#fff}
+.badge{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.b-ok{background:#e3f4f1;color:#1e7a6a}.b-warn{background:#fff4d6;color:#8a5a00}.b-red{background:#fde4ea;color:#c2185b}
+.b-orange{background:#ffebdd;color:#b54708}.b-neutral{background:#e5e5e5;color:#525252}.b-hold{background:#fcd9cc;color:#b42318}
+.b-info{background:#e3e8fb;color:#3a4fb3}.b-sky{background:#e0f2fe;color:#026aa2}.b-slate{background:#eef2f6;color:#475467}
+.tw{border:1px solid var(--border-strong);border-radius:8px}
+table{font-size:14px}
+th{padding:12px;border-bottom:0}
+td{padding:14px 12px;border-bottom:0;border-top:1px solid var(--border-strong)}
+th+th,td+td{border-left:1px solid var(--border-strong)}
+tbody tr:hover td{background:transparent}
+tr.tot td{background:transparent;font-weight:inherit}
+.search{grid-column:auto}
+.fld.sel{cursor:pointer}
+.ovl{position:absolute;inset:0;background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;z-index:5}
+.spin{width:32px;height:32px;border-radius:50%;border:4px solid var(--border);border-top-color:var(--primary);animation:rot 1s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.pager{display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--text-2)}
+.pager .pg{display:flex;gap:4px}.pager .pg span{min-width:32px;height:32px;display:grid;place-items:center;border-radius:8px}
+.pager .pg .cur{background:var(--primary);color:#fff}
+.pager .sz{background:var(--muted);border:1px solid var(--border);border-radius:12px;padding:6px 12px}
+.empty{display:block;padding:32px;text-align:center;color:var(--text-2)}
+.kw{display:flex;align-items:center;gap:10px;background:var(--muted);border:1px solid var(--border);border-radius:var(--field-r);padding:0 14px;min-height:48px;width:100%}
+.kw svg{width:16px;height:16px;color:#777;flex-shrink:0}
+.kw input{flex:1 1 auto;min-width:0;border:0;background:transparent;outline:none;font:inherit;font-size:14px;color:var(--text);padding:12px 0}
+.kw input::placeholder{color:#6b6b6b}
+.kw:focus-within{border-color:#f18a8e;box-shadow:0 0 0 3px rgba(228,27,35,.12)}
+.kw .x{border:0;background:none;cursor:pointer;color:#777;font-size:18px;display:none}
+.kw.has .x{display:block}
+.fgroup{display:flex;flex-direction:column;gap:12px}
+.pager{display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--text-2)}
+.pager .pl{display:flex;align-items:center;gap:7px}
+.pager .psel{display:inline-flex;align-items:center;gap:6px;background:var(--muted);border:1px solid var(--border);border-radius:8px;padding:4px 10px;color:var(--text)}
+.pager .pr{display:flex;align-items:center;gap:8px}
+.pager .pnav{border:0;background:transparent;padding:8px 11px;font-size:14px;font-family:inherit;cursor:pointer;color:var(--text-2)}
+.pager .pnav:disabled{cursor:not-allowed;color:#a3a3a3;font-weight:400}
+.pager .pgn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:#fff;color:var(--text-2);font-size:14px;font-family:inherit;cursor:pointer}
+.pager .pgn.cur{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:700}
+</style>
 </head>
 <body>
-    <div class="container">
-        <!-- Tab Navigation -->
-        <div class="tab-nav">
-            <button class="tab-button ba active" onclick="showRole('ba')">
-                📊 Business Analyst
-            </button>
-            <button class="tab-button po" onclick="showRole('po')">
-                👑 Product Owner
-            </button>
-            <button class="tab-button dev" onclick="showRole('dev')">
-                💻 Developer
-            </button>
-            <button class="tab-button qc" onclick="showRole('qc')">
-                🧪 Quality Control
-            </button>
-        </div>
-        
-        <!-- Business Analyst Journey -->
-        <div id="ba" class="journey-content ba active">
-            <div class="journey-header">
-                <div class="role-title">📊 Business Analyst</div>
-                <div class="role-subtitle">Phân tích nghiệp vụ và thiết kế hệ thống</div>
-            </div>
-            
-            <div class="journey-map">
-                <div class="journey-phases">
-                    <!-- Job 1 -->
-                    <div class="phase-column">
-                        <div class="phase-header">
-                            <div class="phase-title">JOB 1</div>
-                            <div class="phase-subtitle">Tiếp nhận và đánh giá yêu cầu từ khách hàng</div>
-                        </div>
-                        <div class="phase-content">
-                            <div class="content-section jobs">
-                                <div class="section-header">
-                                    <div class="section-icon">🎯</div>
-                                    Jobs to be Done
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">📋</span>Đọc và phân tích requirements documents
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">🤝</span>Clarify và làm rõ yêu cầu với stakeholders
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">🔍</span>Đánh giá tác động khi requirements thay đổi
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Leads to Pain Points</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section pain-points">
-                                <div class="section-header">
-                                    <div class="section-icon">⚠️</div>
-                                    Pain Points
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">⚠️</span>Yêu cầu từ khách hàng thường <span class="highlight">không rõ ràng hoặc thiếu chi tiết</span>
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Mất nhiều thời gian</span> để làm rõ và confirm với stakeholders
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">⚠️</span>Khi yêu cầu thay đổi, <span class="highlight">chưa ước lượng được ảnh hưởng đến toàn dự án</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Desired Solution</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section desired-outcomes">
-                                <div class="section-header">
-                                    <div class="section-icon">✅</div>
-                                    Desired Outcomes
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">🎯</span><span class="highlight">Hiểu nhanh và chính xác</span> requirements từ documents
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">📊</span><span class="highlight">Đánh giá nhanh impact</span> của requirement changes
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">🗺️</span><span class="highlight">Có overview toàn bộ dự án</span> để assess changes
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Job 2 -->
-                    <div class="phase-column">
-                        <div class="phase-header">
-                            <div class="phase-title">JOB 2</div>
-                            <div class="phase-subtitle">Tìm hiểu domain knowledge và business process</div>
-                        </div>
-                        <div class="phase-content">
-                            <div class="content-section jobs">
-                                <div class="section-header">
-                                    <div class="section-icon">🎯</div>
-                                    Jobs to be Done
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">🔍</span>Nghiên cứu tri thức về domain của dự án
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">📚</span>Tìm hiểu business rules và quy trình
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">🎓</span>Onboarding bản thân vào dự án
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Leads to Pain Points</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section pain-points">
-                                <div class="section-header">
-                                    <div class="section-icon">⚠️</div>
-                                    Pain Points
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Thiếu tri thức về domain</span> của dự án mới gây mất thời gian làm rõ
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Thiếu tài liệu tổng quan</span> gây mất thời gian onboarding và hỗ trợ thêm từ thành viên khác
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Desired Solution</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section desired-outcomes">
-                                <div class="section-header">
-                                    <div class="section-icon">✅</div>
-                                    Desired Outcomes
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">📚</span><span class="highlight">Có nguồn cung cấp tài liệu hiệu quả</span> về domain knowledge
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">📋</span><span class="highlight">Có tài liệu tổng quan về hệ thống</span> cần làm để onboarding nhanh
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Job 3 -->
-                    <div class="phase-column">
-                        <div class="phase-header">
-                            <div class="phase-title">JOB 3</div>
-                            <div class="phase-subtitle">Xây dựng tài liệu PRD (bao gồm UI Design)</div>
-                        </div>
-                        <div class="phase-content">
-                            <div class="content-section jobs">
-                                <div class="section-header">
-                                    <div class="section-icon">🎯</div>
-                                    Jobs to be Done
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">📝</span>Viết Product Requirements Document (PRD)
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">🎨</span>Thiết kế UI/UX wireframes và mockups
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">🔄</span>Điều chỉnh design khi có thay đổi yêu cầu
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Leads to Pain Points</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section pain-points">
-                                <div class="section-header">
-                                    <div class="section-icon">⚠️</div>
-                                    Pain Points
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Thiết kế giao diện tốn thời gian</span>, mỗi thay đổi nhỏ cần sửa lại nhiều màn hình
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Desired Solution</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section desired-outcomes">
-                                <div class="section-header">
-                                    <div class="section-icon">✅</div>
-                                    Desired Outcomes
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">🛠️</span><span class="highlight">Giảm nỗ lực design</span> với tools tự động và template
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Summary Panel -->
-                <div class="summary-panel">
-                    <div class="summary-title">
-                        <span class="summary-icon">🎯</span>
-                        Vấn đề cốt lõi cần giải quyết
-                    </div>
-                    <div class="summary-content">
-                        <strong>Dự án thiếu tài liệu tổng quan và tri thức domain dễ hiểu</strong> cho người mới, cùng với <strong>quy trình thiết kế giao diện tốn công và khó bảo trì</strong> khi thay đổi.
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Product Owner Journey -->
-        <div id="po" class="journey-content po">
-            <div class="journey-header">
-                <div class="role-title">👑 Product Owner</div>
-                <div class="role-subtitle">Quản lý sản phẩm và yêu cầu từ khách hàng</div>
-            </div>
-            
-            <div class="journey-map">
-                <div class="journey-phases">
-                    <!-- Job 1 -->
-                    <div class="phase-column">
-                        <div class="phase-header">
-                            <div class="phase-title">JOB 1</div>
-                            <div class="phase-subtitle">Tiếp nhận & hiểu (Nhận yêu cầu từ khách hàng)</div>
-                        </div>
-                        <div class="phase-content">
-                            <div class="content-section jobs">
-                                <div class="section-header">
-                                    <div class="section-icon">🎯</div>
-                                    Jobs to be Done
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">📋</span>Đọc và phân tích tài liệu SRS từ khách hàng
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">🔍</span>Tìm hiểu cấu trúc code cũ và nghiệp vụ phức tạp
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">📖</span>Nghiên cứu tài liệu hệ thống hiện tại
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Leads to Pain Points</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section pain-points">
-                                <div class="section-header">
-                                    <div class="section-icon">⚠️</div>
-                                    Pain Points
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Cấu trúc code cũ, nghiệp vụ phức tạp và thiếu tài liệu</span> gây mất nhiều thời gian tìm hiểu
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Desired Solution</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section desired-outcomes">
-                                <div class="section-header">
-                                    <div class="section-icon">✅</div>
-                                    Desired Outcomes
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">🎯</span><span class="highlight">Hiểu nhanh và chính xác</span> nghiệp vụ và cấu trúc hệ thống
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Job 2 -->
-                    <div class="phase-column">
-                        <div class="phase-header">
-                            <div class="phase-title">JOB 2</div>
-                            <div class="phase-subtitle">Bóc tách task (Phân tách yêu cầu thành task)</div>
-                        </div>
-                        <div class="phase-content">
-                            <div class="content-section jobs">
-                                <div class="section-header">
-                                    <div class="section-icon">🎯</div>
-                                    Jobs to be Done
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">✂️</span>Phân tách yêu cầu thành các task cụ thể
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">📝</span>Viết user stories và acceptance criteria
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">⏰</span>Estimate effort cho từng task
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Leads to Pain Points</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section pain-points">
-                                <div class="section-header">
-                                    <div class="section-icon">⚠️</div>
-                                    Pain Points
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Cấu trúc code cũ, nghiệp vụ phức tạp và thiếu tài liệu</span> gây mất thời gian bóc task
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Desired Solution</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section desired-outcomes">
-                                <div class="section-header">
-                                    <div class="section-icon">✅</div>
-                                    Desired Outcomes
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">🎯</span><span class="highlight">Breakdown tasks chính xác và có logic</span> từ yêu cầu
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Job 3 -->
-                    <div class="phase-column">
-                        <div class="phase-header">
-                            <div class="phase-title">JOB 3</div>
-                            <div class="phase-subtitle">Review & kiểm soát (Review code và tài liệu)</div>
-                        </div>
-                        <div class="phase-content">
-                            <div class="content-section jobs">
-                                <div class="section-header">
-                                    <div class="section-icon">🎯</div>
-                                    Jobs to be Done
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">👀</span>Review code do thiếu developer giàu kinh nghiệm
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">📄</span>Review tài liệu kỹ thuật từ team
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">✅</span>Đảm bảo chất lượng sản phẩm
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Leads to Pain Points</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section pain-points">
-                                <div class="section-header">
-                                    <div class="section-icon">⚠️</div>
-                                    Pain Points
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Thiếu dev cứng</span> nên mất thời gian review code và tài liệu
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Desired Solution</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section desired-outcomes">
-                                <div class="section-header">
-                                    <div class="section-icon">✅</div>
-                                    Desired Outcomes
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">✅</span><span class="highlight">Đảm bảo code quality</span> không cần senior developer experience
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Summary Panel -->
-                <div class="summary-panel">
-                    <div class="summary-title">
-                        <span class="summary-icon">🎯</span>
-                        Vấn đề cốt lõi cần giải quyết
-                    </div>
-                    <div class="summary-content">
-                        <strong>Codebase cũ phức tạp và thiếu tài liệu</strong> khiến việc <em>hiểu</em>, <em>bóc tách yêu cầu</em>, và <em>review</em> mất nhiều thời gian, đặc biệt khi thiếu developer giàu kinh nghiệm, làm chậm tiến độ.
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Developer Journey -->
-        <div id="dev" class="journey-content dev">
-            <div class="journey-header">
-                <div class="role-title">💻 Developer</div>
-                <div class="role-subtitle">Phát triển phần mềm và maintain codebase</div>
-            </div>
-            
-            <div class="journey-map">
-                <div class="journey-phases">
-                    <!-- Job 1 -->
-                    <div class="phase-column">
-                        <div class="phase-header">
-                            <div class="phase-title">JOB 1</div>
-                            <div class="phase-subtitle">Tìm hiểu codebase</div>
-                        </div>
-                        <div class="phase-content">
-                            <div class="content-section jobs">
-                                <div class="section-header">
-                                    <div class="section-icon">🎯</div>
-                                    Jobs to be Done
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">🔍</span>Nghiên cứu cấu trúc code cũ và nghiệp vụ
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">📖</span>Đọc tài liệu kỹ thuật hiện có
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">🧩</span>Hiểu logic business trong legacy code
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Leads to Pain Points</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section pain-points">
-                                <div class="section-header">
-                                    <div class="section-icon">⚠️</div>
-                                    Pain Points
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Mất thời gian tìm hiểu codebase, nghiệp vụ</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Desired Solution</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section desired-outcomes">
-                                <div class="section-header">
-                                    <div class="section-icon">✅</div>
-                                    Desired Outcomes
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">🛠️</span><span class="highlight">Có tool hỗ trợ tìm hiểu nghiệp vụ, code base</span> dự án cũ
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Job 2 -->
-                    <div class="phase-column">
-                        <div class="phase-header">
-                            <div class="phase-title">JOB 2</div>
-                            <div class="phase-subtitle">Development (coding + documentation)</div>
-                        </div>
-                        <div class="phase-content">
-                            <div class="content-section jobs">
-                                <div class="section-header">
-                                    <div class="section-icon">🎯</div>
-                                    Jobs to be Done
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">💻</span>Tập trung vào việc coding
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">📝</span>Viết tài liệu cho code mới
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">🔄</span>Cập nhật tài liệu khi code thay đổi
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Leads to Pain Points</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section pain-points">
-                                <div class="section-header">
-                                    <div class="section-icon">⚠️</div>
-                                    Pain Points
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Tập trung vào code hơn nên việc phát triển tài liệu theo quy trình mất thời gian</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Desired Solution</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section desired-outcomes">
-                                <div class="section-header">
-                                    <div class="section-icon">✅</div>
-                                    Desired Outcomes
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">📄</span><span class="highlight">Tài liệu DD tự cập nhật theo code</span>
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">🤖</span><span class="highlight">Muốn ứng dụng AI, công cụ hỗ trợ</span> việc phát triển mà vẫn đảm bảo an toàn thông tin
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Job 3 -->
-                    <div class="phase-column">
-                        <div class="phase-header">
-                            <div class="phase-title">JOB 3</div>
-                            <div class="phase-subtitle">Testing, review và fix bug</div>
-                        </div>
-                        <div class="phase-content">
-                            <div class="content-section jobs">
-                                <div class="section-header">
-                                    <div class="section-icon">🎯</div>
-                                    Jobs to be Done
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">🧪</span>Testing và debugging code
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">🔧</span>Refactor code để cải thiện chất lượng
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">📊</span>Quản lý technical debt
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Leads to Pain Points</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section pain-points">
-                                <div class="section-header">
-                                    <div class="section-icon">⚠️</div>
-                                    Pain Points
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Không có đủ thời gian để refactor code → technical debt càng ngày càng nhiều</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Desired Solution</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section desired-outcomes">
-                                <div class="section-header">
-                                    <div class="section-icon">✅</div>
-                                    Desired Outcomes
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">🔄</span><span class="highlight">Các technical debt phải được xử lý liên tục</span>
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">⚡</span><span class="highlight">Có khả năng refactor khi có việc tối ưu lại</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Job 4 -->
-                    <div class="phase-column">
-                        <div class="phase-header">
-                            <div class="phase-title">JOB 4</div>
-                            <div class="phase-subtitle">Bàn giao sản phẩm (cho QC và khách hàng)</div>
-                        </div>
-                        <div class="phase-content">
-                            <div class="content-section jobs">
-                                <div class="section-header">
-                                    <div class="section-icon">🎯</div>
-                                    Jobs to be Done
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">📦</span>Chuẩn bị deliverables cho handover
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">👥</span>Handover cho QC team
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">📋</span>Final handover cho khách hàng
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Leads to Pain Points</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section pain-points">
-                                <div class="section-header">
-                                    <div class="section-icon">⚠️</div>
-                                    Pain Points
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Mất thời gian review tài liệu, source code</span> để handover cho QC
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Desired Solution</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section desired-outcomes">
-                                <div class="section-header">
-                                    <div class="section-icon">✅</div>
-                                    Desired Outcomes
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">⚡</span><span class="highlight">Review nhanh và hiệu quả</span> thay cho manual review
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Summary Panel -->
-                <div class="summary-panel">
-                    <div class="summary-title">
-                        <span class="summary-icon">🎯</span>
-                        Vấn đề cốt lõi cần giải quyết
-                    </div>
-                    <div class="summary-content">
-                        <strong>Codebase cũ phức tạp, thiếu documentation và tools hỗ trợ</strong>, dẫn đến <strong>technical debt tích lũy</strong> và <strong>mất thời gian cho review/handover process</strong>.
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Quality Control Journey -->
-        <div id="qc" class="journey-content qc">
-            <div class="journey-header">
-                <div class="role-title">🧪 Quality Control</div>
-                <div class="role-subtitle">Đảm bảo chất lượng sản phẩm và quy trình testing</div>
-            </div>
-            
-            <div class="journey-map">
-                <div class="journey-phases">
-                    <!-- Job 1 -->
-                    <div class="phase-column">
-                        <div class="phase-header">
-                            <div class="phase-title">JOB 1</div>
-                            <div class="phase-subtitle">Onboarding và tìm hiểu dự án</div>
-                        </div>
-                        <div class="phase-content">
-                            <div class="content-section jobs">
-                                <div class="section-header">
-                                    <div class="section-icon">🎯</div>
-                                    Jobs to be Done
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">🎓</span>Onboard nhân viên mới vào dự án
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">📚</span>Học hỏi về nghiệp vụ và quy trình
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">📋</span>Setup testing environment và tools
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Leads to Pain Points</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section pain-points">
-                                <div class="section-header">
-                                    <div class="section-icon">⚠️</div>
-                                    Pain Points
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Không có lộ trình onboard cho thành viên mới vào dự án, có training nhưng không hiệu quả</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Desired Solution</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section desired-outcomes">
-                                <div class="section-header">
-                                    <div class="section-icon">✅</div>
-                                    Desired Outcomes
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">📖</span><span class="highlight">Cần có lộ trình training hiệu quả</span> cho các thành viên mới onboard dự án
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Job 2 -->
-                    <div class="phase-column">
-                        <div class="phase-header">
-                            <div class="phase-title">JOB 2</div>
-                            <div class="phase-subtitle">Tạo test plan và test cases</div>
-                        </div>
-                        <div class="phase-content">
-                            <div class="content-section jobs">
-                                <div class="section-header">
-                                    <div class="section-icon">🎯</div>
-                                    Jobs to be Done
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">📝</span>Viết test cases và test scenarios
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">📖</span>Tạo tài liệu HDSD (Hướng dẫn sử dụng)
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">🔄</span>Update test materials theo changes
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Leads to Pain Points</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section pain-points">
-                                <div class="section-header">
-                                    <div class="section-icon">⚠️</div>
-                                    Pain Points
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Viết/ Update TCs, tài liệu HDSD mất nhiều thời gian</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Desired Solution</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section desired-outcomes">
-                                <div class="section-header">
-                                    <div class="section-icon">✅</div>
-                                    Desired Outcomes
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">🛠️</span><span class="highlight">Cần tool hỗ trợ giảm thời gian viết/ update TCs</span> và các loại tài liệu như HDSD
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Job 3 -->
-                    <div class="phase-column">
-                        <div class="phase-header">
-                            <div class="phase-title">JOB 3</div>
-                            <div class="phase-subtitle">Thực hiện testing và báo cáo bugs</div>
-                        </div>
-                        <div class="phase-content">
-                            <div class="content-section jobs">
-                                <div class="section-header">
-                                    <div class="section-icon">🎯</div>
-                                    Jobs to be Done
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">🧪</span>Execute test cases và scenarios
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">👀</span>Review test cases cho team members
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">🐛</span>Report bugs và track resolution
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Leads to Pain Points</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section pain-points">
-                                <div class="section-header">
-                                    <div class="section-icon">⚠️</div>
-                                    Pain Points
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Mất nhiều thời gian test các chức năng đơn giản do validate nhiều, không có time tập trung các tính năng khó</span>
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Không có thời gian review TCs cho các thành viên</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Desired Solution</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section desired-outcomes">
-                                <div class="section-header">
-                                    <div class="section-icon">✅</div>
-                                    Desired Outcomes
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">🤖</span><span class="highlight">Cần tự động hóa kiểm thử các chức năng đơn giản</span> để QC focus vào các việc khó hơn
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">🔍</span><span class="highlight">Cần có công cụ review được KBKT theo srs/ design</span> đã có
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Job 4 -->
-                    <div class="phase-column">
-                        <div class="phase-header">
-                            <div class="phase-title">JOB 4</div>
-                            <div class="phase-subtitle">Theo dõi thay đổi và cập nhật test materials</div>
-                        </div>
-                        <div class="phase-content">
-                            <div class="content-section jobs">
-                                <div class="section-header">
-                                    <div class="section-icon">🎯</div>
-                                    Jobs to be Done
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">👀</span>Monitor tài liệu đầu vào update liên tục
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">2</div>
-                                        <span class="item-emoji">🔍</span>Nắm bắt các thay đổi requirements
-                                    </li>
-                                    <li class="content-item">
-                                        <div class="item-number">3</div>
-                                        <span class="item-emoji">🔄</span>Update test materials theo changes
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Leads to Pain Points</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section pain-points">
-                                <div class="section-header">
-                                    <div class="section-icon">⚠️</div>
-                                    Pain Points
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">⚠️</span><span class="highlight">Các tài liệu đầu vào update liên tục (design, srs) nên QC không kịp nắm hết</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="connection-indicator">
-                                <span class="connection-arrow">↓</span>
-                                <span>Desired Solution</span>
-                                <span class="connection-arrow">↓</span>
-                            </div>
-                            
-                            <div class="content-section desired-outcomes">
-                                <div class="section-header">
-                                    <div class="section-icon">✅</div>
-                                    Desired Outcomes
-                                </div>
-                                <ul class="content-list">
-                                    <li class="content-item">
-                                        <div class="item-number">1</div>
-                                        <span class="item-emoji">📊</span><span class="highlight">Cần có công cụ quản lý thay đổi các phiên bản</span> nếu có update
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Summary Panel -->
-                <div class="summary-panel">
-                    <div class="summary-title">
-                        <span class="summary-icon">🎯</span>
-                        Vấn đề cốt lõi cần giải quyết
-                    </div>
-                    <div class="summary-content">
-                        <strong>Thiếu onboarding hiệu quả, tài liệu thay đổi liên tục khó theo dõi</strong>, và <strong>mất thời gian cho manual testing/review</strong> thay vì focus vào complex test cases.
-                    </div>
-                </div>
-            </div>
-        </div>
+
+<div class="proto-bar">
+  <b>Prototype báo cáo</b>
+  Trạng thái:
+  <button data-s="data" class="on">Có dữ liệu</button>
+  <button data-s="loading">Đang tải</button>
+  <button data-s="empty">Chưa có dữ liệu</button>
+  <button data-s="error">Lỗi tải</button>
+  <button data-s="noperm">Không có quyền (403)</button>
+  <span class="sep"></span>
+  Quyền export:
+  <button data-e="on" class="on">Có</button>
+  <button data-e="off">Không</button>
+</div>
+
+<div class="shell">
+  <aside class="side">
+    <div class="side-top">
+      <img src="../../../../public/images/digift-logo.png" alt="DigiGift">
+      <img src="../../../../public/icons/sidebar.png" width="20" height="20" alt="">
     </div>
-    
-    <script>
-        function showRole(roleId) {
-            // Hide all journey contents
-            const allContents = document.querySelectorAll('.journey-content');
-            allContents.forEach(content => content.classList.remove('active'));
-            
-            // Remove active class from all buttons
-            const allButtons = document.querySelectorAll('.tab-button');
-            allButtons.forEach(button => button.classList.remove('active'));
-            
-            // Show selected content and activate button
-            document.getElementById(roleId).classList.add('active');
-            document.querySelector(`.tab-button.${roleId}`).classList.add('active');
-        }
-        
-        // Initialize with BA tab active
-        document.addEventListener('DOMContentLoaded', function() {
-            showRole('ba');
-        });
-        
-        // Add smooth scrolling for better UX
-        document.querySelectorAll('.phase-column').forEach(column => {
-            column.addEventListener('click', function() {
-                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            });
-        });
-    </script>
+    <nav class="nav">
+      <a class="nl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="4"/><path d="M12 8v13M19 12v9H5v-9M7.5 8a2.5 2.5 0 010-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 010 5"/></svg><span>Phân phối &amp; Gửi eGift</span></a>
+      <div>
+        <button class="nl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-4 3-6 6.5-6s6 2 6.5 6M16 4.5a3.5 3.5 0 010 7M18 14c2 .8 3.2 2.6 3.5 6"/></svg><span class="grow">Quản lý khách hàng</span></button>
+        <div class="kids"><a class="sl">Danh sách khách hàng</a><a class="sl">Nhóm khách hàng</a></div>
+      </div>
+      <div>
+        <button class="nl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H5a2 2 0 010-4h13v4zM3 5v14a2 2 0 002 2h15V7M16 14h.01"/></svg><span class="grow">Ngân sách</span></button>
+        <div class="kids"><a class="sl">Phân bổ ngân sách</a><a class="sl">Lịch sử ngân sách</a></div>
+      </div>
+      <div id="menuReports">
+        <button class="nl act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 15l4-4 3 3 5-6"/></svg><span class="grow">Báo cáo</span><span class="newtag">Mới</span></button>
+        <div class="kids">
+          <button class="sl act" data-p="dash">Dashboard</button>
+          <button class="sl" data-p="budget">Báo cáo ngân sách</button>
+          <button class="sl" data-p="egift">Báo cáo eGift</button>
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="right">
+    <header class="hdr">
+      <img src="../../../../public/icons/notification-bell.png" width="24" height="24" alt="">
+      <div class="user"><div class="av">BI</div><div><div class="un">biz7k3m9q2x-admin</div><div class="ur">Doanh nghiep Test BIZ7K3M9Q2X</div></div></div>
+    </header>
+
+    <main>
+      <div id="v403" class="hide p403">
+        <h2>403</h2><div style="font-weight:700">Bạn không có quyền truy cập chức năng Báo cáo</div>
+        <button class="btn pri" style="margin-top:12px">Về trang chủ</button>
+      </div>
+
+      <div id="vmain" style="display:flex;flex-direction:column;gap:16px">
+        <div class="ph"><h1 id="title">Dashboard</h1></div>
+        <span id="purpose" class="hide"></span>
+
+        <div id="tabsWrap" class="tabs hide"></div>
+        <div class="card" id="filterCard">
+          <div class="frow"><div class="pills" id="quick"></div></div>
+          <div class="fgroup"><div id="kwRow" class="kw hide"></div><div class="grid4" id="filters"></div></div>
+          <span id="filterHint" class="hide"></span>
+          <div class="actions"><button class="btn">Đặt lại</button><button class="btn pri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Tìm kiếm</button></div>
+        </div>
+
+        <div id="overview" class="stats5 hide"></div>
+        <div id="warnBar" class="warnbar hide"></div>
+        <div id="alertErr" class="alert hide"><span id="errMsg">Không tải được báo cáo.</span><button class="btn sm">Thử lại</button></div>
+
+        <!-- Dashboard: 6 thẻ ngân sách + 6 thẻ gift + 2 chart -->
+        <div id="dash" style="display:flex;flex-direction:column;gap:16px">
+          <section class="sec"><h3>Ngân sách</h3><div class="stats" id="statsBudget"></div></section>
+          <section class="sec"><h3>Gift</h3><div class="stats" id="statsGift"></div></section>
+          <div class="grid2">
+            <div class="card"><h3>Xu hướng ngân sách theo thời gian</h3><div class="legend"><span><i style="background:var(--c1)"></i>Đã phân bổ</span><span><i style="background:var(--c2)"></i>Đã sử dụng</span></div><div id="ch1"></div></div>
+            <div class="card"><h3>Phân bổ gift theo trạng thái</h3><div id="ch2"></div></div>
+          </div>
+        </div>
+
+        <!-- Trang báo cáo: danh sách -->
+        <div id="listCard" class="card hide">
+          <div class="thead-row"><h3 id="listTitle"></h3>
+            <div class="tools">
+              <button class="btn tool" id="btnCols"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18M15 3v18"/></svg><span id="colsLabel"></span></button>
+              <button class="btn tool" id="btnExport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>Xuất Excel</button>
+              <div class="colpanel hide" id="colPanel"></div>
+            </div></div>
+          <div class="tw" style="position:relative;min-height:120px"><div class="ovl hide" id="ovl"><div class="spin"></div></div><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+          <div class="pager" id="pager"></div>
+        </div>
+
+        <div id="emptyBox" class="card hide"><div class="empty">Không có dữ liệu phù hợp.</div></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const ico={cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',dd:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>'};
+const F=(label,val,type)=>`<div class="fld"><label>${label}</label><div class="v">${val}${ico[type]||''}</div></div>`;
+// ===== Lọc nhanh: giống admin portal (Hôm nay / Tuần này T2–CN / Tháng này / Tùy chọn). Hôm nay giả định = Thứ Hai 05/10/2026 14:00 =====
+const QUICK=[['today','Hôm nay'],['week','Tuần này'],['month','Tháng này']];
+const RANGE={today:['05/10/2026','05/10/2026'],week:['05/10/2026','11/10/2026'],month:['01/10/2026','31/10/2026'],custom:['01/10/2026','05/10/2026']};
+let quick='month';
+const kyFilters=()=>[F('Từ ngày',RANGE[quick][0],'cal'),F('Đến ngày',RANGE[quick][1],'cal')];
+const VIEWSEL=()=>`<div class="fld sel" data-view="1"><label>Xem theo</label><div class="v">${usageView==='gift'?'Theo serial (lượt sử dụng)':'Theo lệnh'}${ico.dd}</div></div>`;
+const SEARCH=(label,ph)=>`<div class="search ${(qtext[keyOf()]||'')?'has':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><div class="tx" style="flex:1"><label>${label}</label><input id="q" type="text" maxlength="100" autocomplete="off" placeholder="${ph}" value="${(qtext[keyOf()]||'').replace(/"/g,'&quot;')}"></div><button class="x" id="qx" title="Xóa">×</button></div>`;
+const qtext={};
+const kwHtml=ph=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="q" type="text" maxlength="100" autocomplete="off" placeholder="${ph}" value="${(qtext[keyOf()]||'').replace(/"/g,'&quot;')}"><button class="x" id="qx" title="Xóa">×</button>`;
+const matchRow=(r,set,kw)=>{if(!kw)return true;const ids=set.cols.map(c=>c.id);const use=(set.search&&set.search.cols)||ids;return use.some(id=>{const i=ids.indexOf(id);return i>=0&&norm(plain(r[i])).includes(kw)})};
+const norm=x=>String(x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').toLowerCase().trim();
+const st=(t,c)=>`@${t}|${c}`; // badge: @tone|text
+
+// ===== Cột: id, header, align right?, hiển thị mặc định? (khớp EgiftTableColumn) =====
+const C=(id,h,r,hidden)=>({id,h,r:!!r,hidden:!!hidden});
+const PAGES={
+  dash:{title:'Dashboard',tabs:null,filters:()=>kyFilters(),hint:'Mặc định hiển thị tháng này.'},
+  budget:{title:'Báo cáo ngân sách',tabs:[['alloc','Phân bổ'],['use','Sử dụng']],
+    sets:{
+      alloc:{
+        listTitle:'Danh sách giao dịch phân bổ',search:{ph:'Tìm kiếm theo mã giao dịch, tên nhóm/phòng ban',cols:['code','group']},
+        filters:()=>[...kyFilters(),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Loại giao dịch','Tất cả','dd'),F('Nguồn ngân sách','Tất cả','dd'),F('Người thực hiện','Tất cả','dd'),F('Trạng thái','Tất cả','dd')],
+        hint:'Bấm một dòng để xem chi tiết giao dịch.',
+        overview:[['Tổng phân bổ','6.000.000 đ','info'],['Tổng điều chỉnh','0 đ','slate'],['Tổng thu hồi','0 đ','danger'],['Tổng chuyển giữa nhóm','0 đ','sky'],['Còn lại chưa phân bổ','4.000.000 đ','success'],['Tỷ lệ phân bổ','60,0%','info']],
+        cols:[C('code','Mã giao dịch'),C('time','Thời gian'),C('type','Loại giao dịch'),C('group','Nhóm/phòng ban'),C('source','Nguồn ngân sách'),C('amount','Số tiền',1),C('gb','Số dư nhóm trước',1,1),C('ga','Số dư nhóm sau',1),C('pool','Còn lại chưa phân bổ sau',1),C('actor','Người thực hiện'),C('status','Trạng thái'),C('reason','Lý do',0,1)],
+        rows:[['PB-2','03/10/2026 14:40',st('info','Phân bổ'),'Hero','Ngân sách chưa phân bổ','+500.000 đ','0 đ','500.000 đ','4.000.000 đ','biz7k3m9q2x-admin',st('ok','Thành công'),'Ngân sách quý 4'],
+              ['PB-1','01/10/2026 09:12',st('info','Phân bổ'),'BMoney','Ngân sách chưa phân bổ','+5.500.000 đ','0 đ','5.500.000 đ','4.500.000 đ','biz7k3m9q2x-admin',st('ok','Thành công'),'Ngân sách quý 4'],
+              ['TH-3','02/10/2026 11:03',st('orange','Thu hồi'),'BMoney','Ngân sách chưa phân bổ','-100.000 đ','5.600.000 đ','5.500.000 đ','4.100.000 đ','biz7k3m9q2x-admin',st('ok','Thành công'),'Điều chuyển dự án'],
+              ['CH-4','04/10/2026 16:20',st('sky','Chuyển'),'Hero','BMoney','+200.000 đ','500.000 đ','700.000 đ','4.000.000 đ','biz7k3m9q2x-admin',st('ok','Thành công'),'—']]},
+      use:{
+        listTitle:'Danh sách giao dịch sử dụng ngân sách',search:{ph:'Tìm kiếm theo mã lệnh, tên nhóm/phòng ban',cols:['code','group']},
+        filters:()=>[...kyFilters(),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Loại giao dịch','Tất cả','dd'),F('Người thực hiện','Tất cả','dd'),F('Trạng thái','Tất cả','dd')],
+        hint:'Bấm mã lệnh để mở màn chi tiết lệnh.',
+        warn:'Có <b>1 nhóm</b> dùng ngân sách cao bất thường: <b>BMoney</b>.',
+        overview:[['Đã sử dụng','1.000.000 đ','slate'],['Tỷ lệ sử dụng','16,7%','info'],['Đang giữ / chờ xử lý','500.000 đ','hold'],['Đã release (hủy / lỗi)','0 đ','sky'],['Hoàn lại','0 đ','success'],['Còn lại','4.500.000 đ','info'],['Số nhóm vượt cảnh báo','1 nhóm','danger']],
+        cols:[C('code','Mã lệnh'),C('time','Thời gian'),C('type','Loại giao dịch'),C('group','Nhóm/phòng ban'),C('amount','Số tiền',1),C('before','Số dư trước giao dịch',1),C('after','Số dư sau giao dịch',1),C('actor','Người thực hiện'),C('status','Trạng thái')],
+        rows:[[st('link','LG-20261004-006'),'04/10/2026 17:10',st('hold','Giữ tiền'),'Hero','-200.000 đ','500.000 đ','300.000 đ','buyer02',st('hold','Đang giữ')],
+              [st('link','LG-20261001-001'),'04/10/2026 08:30',st('ok','Phát hành'),'BMoney','-1.000.000 đ','4.200.000 đ','4.200.000 đ','buyer01',st('ok','Đã trừ')],
+              [st('link','LG-20261003-005'),'03/10/2026 10:05',st('hold','Giữ tiền'),'BMoney','-300.000 đ','4.500.000 đ','4.200.000 đ','buyer01',st('hold','Đang giữ')],
+              [st('link','LG-20261001-001'),'02/10/2026 09:00',st('hold','Giữ tiền'),'BMoney','-1.000.000 đ','5.500.000 đ','4.500.000 đ','buyer01',st('hold','Đang giữ')]]}
+    }},
+  egift:{title:'Báo cáo eGift',tabs:[['issue','Phát hành & gửi'],['redeem','Sử dụng']],
+    sets:{
+      issue:{listTitle:'Danh sách lệnh phân phối',search:{ph:'Tìm kiếm theo mã lệnh, tên lệnh, tên nhóm/phòng ban, mã gift, serial, SĐT/email, tên người nhận',cols:['code','name','group']},hint:'Mỗi dòng là một lô (mã lệnh). Bấm mã lệnh để mở màn chi tiết lệnh.',
+        filters:()=>[F('Thời gian gửi từ',RANGE[quick][0],'cal'),F('Thời gian gửi đến',RANGE[quick][1],'cal'),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Mã lệnh','Tất cả','dd'),F('Trạng thái lệnh','Tất cả trạng thái','dd'),F('Trạng thái gửi','Tất cả','dd'),F('Kênh gửi','Tất cả','dd'),F('Người tạo','Tất cả','dd'),F('Loại gift','Tất cả','dd')],
+        overview:[['Tổng đã phát hành','200','slate',null,['150','50','0','0']],['Tổng gửi thành công','156','success',null,['106','50','0','0']],['Gửi thất bại','32','danger',null,['32','0','0','0']],['Đang gửi','12','info',null,['12','0','0','0']],['Chờ gửi','40','sky',null,['40','0','0','0']]],
+        cols:[C('code','Mã lệnh'),C('name','Tên lệnh'),C('group','Nhóm/phòng ban'),C('status','Trạng thái lệnh'),C('sstat','Trạng thái gửi'),C('ch','Kênh gửi'),C('gifts','Số gift',1),C('val','Tổng tiền (quà + phí)',1),C('giftamt','Tiền quà',1,1),C('fee','Phí gửi',1,1),C('issued','Đã phát hành',1),C('sent','Gửi thành công',1),C('fail','Gửi thất bại',1),C('sending','Đang gửi',1,1),C('pend','Chờ gửi',1,1),C('rate','Tỷ lệ gửi thành công',1),C('rs','Số gift đã gửi lại',1,1),C('err','Lỗi gửi phổ biến',0,1),C('sendt','Thời gian gửi'),C('created','Ngày tạo',0,1),C('by','Người tạo')],
+        rows:[[st('link','LG-20261001-001'),'Thưởng tháng 10','BMoney',st('red','Gửi tin lỗi'),st('orange','Thành công một phần'),'SMS, Email','100','50.050.000 đ','50.000.000 đ','50.000 đ','100','98','2','0','0','98,0%','2','Số điện thoại sai (2)','01/10/2026 09:30','01/10/2026','buyer01'],
+              [st('link','LG-20261002-003'),'Quà sinh nhật Q4','Hero',st('ok','Hoàn thành'),st('ok','Thành công'),'ZNS','50','10.015.000 đ','10.000.000 đ','15.000 đ','50','50','0','0','0','100%','0','—','02/10/2026 14:05','02/10/2026','buyer02'],
+              [st('link','LG-20261003-005'),'Thưởng quý 4','BMoney',st('sky','Đã lên lịch'),st('sky','Chờ gửi'),'SMS','40','20.020.000 đ','20.000.000 đ','20.000 đ','0','0','0','0','40','—','0','—','15/10/2026 08:00','03/10/2026','buyer01'],
+              [st('link','LG-20261004-007'),'Chiến dịch tri ân','Hero',st('red','Gửi tin lỗi'),st('red','Thất bại'),'SMS','30','6.015.000 đ','6.000.000 đ','15.000 đ','30','0','30','0','0','0%','30','Nhà mạng từ chối (30)','04/10/2026 10:00','04/10/2026','buyer02'],
+              [st('link','LG-20261005-009'),'Quà khai trương','BMoney',st('info','Đang gửi'),st('info','Đang gửi'),'SMS, ZNS','20','4.016.000 đ','4.000.000 đ','16.000 đ','20','8','0','12','0','40,0%','0','—','05/10/2026 13:58','05/10/2026','buyer01'],
+              [st('link','LG-20261005-010'),'Quà đối tác','Hero',st('warn','Chờ phê duyệt'),'—','Email','15','3.000.000 đ','3.000.000 đ','0 đ','0','0','0','0','0','—','0','—','—','05/10/2026','buyer02']]},
+      redeem:{listTitle:'Danh sách sử dụng gift theo lệnh',search:{ph:'Tìm kiếm theo mã lệnh, tên lệnh, tên nhóm/phòng ban, mã gift, serial, SĐT/email, tên người nhận',cols:['code','name','group']},hint:'Bấm mã lệnh để mở màn chi tiết lệnh.',
+        filters:()=>[F('Thời gian gửi từ',RANGE[quick][0],'cal'),F('Thời gian gửi đến',RANGE[quick][1],'cal'),VIEWSEL(),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Mã lệnh','Tất cả','dd'),F('Trạng thái lệnh','Tất cả trạng thái','dd'),F('Loại gift','Tất cả','dd'),F('Người tạo','Tất cả','dd'),F('Trạng thái sử dụng','Tất cả','dd'),F('Merchant / thương hiệu','Tất cả','dd'),F('Hình thức sử dụng','Tất cả','dd')],
+        overview:[['Đã sử dụng','87','info',null,['61','26','0','0']],['Giá trị đã sử dụng','35.100.000 đ','hold',null,['30.500.000 đ','4.600.000 đ','0 đ','0 đ']],['Dùng một phần','6','sky',null],['Chưa sử dụng','58','slate',null,['36','22','0','0']],['Hết hạn','5','danger',null,['3','2','0','0']],['Số dư còn lại','5.000.000 đ','success',null],['Tỷ lệ redeem','58,0%','info',null,['61,0%','52,0%','—','—']],['TB từ gửi đến dùng','2,0 ngày','slate',null,['1,8 ngày','2,4 ngày','—','—']]],
+        cols:[C('code','Mã lệnh'),C('name','Tên lệnh'),C('group','Nhóm/phòng ban'),C('status','Trạng thái lệnh',0,1),C('sendt','Thời gian gửi',0,1),C('iss','Đã phát hành',1),C('used','Đã sử dụng',1),C('part','Trong đó dùng một phần',1),C('un','Chưa sử dụng',1),C('exp','Hết hạn',1),C('rate','Tỷ lệ redeem',1),C('val','Giá trị đã sử dụng',1),C('bal','Số dư còn lại',1),C('avg','TB gửi → dùng',1),C('fail','Gift có redeem thất bại',1,1),C('by','Người tạo',0,1)],
+        rows:[[st('link','LG-20261001-001'),'Thưởng tháng 10','BMoney',st('red','Gửi tin lỗi'),'01/10/2026 09:30','100','61','0','36','3','61,0%','30.500.000 đ','—','1,8 ngày','2','buyer01'],
+              [st('link','LG-20261002-003'),'Quà sinh nhật Q4','Hero',st('ok','Hoàn thành'),'02/10/2026 14:05','50','26','6','22','2','52,0%','4.600.000 đ','5.000.000 đ','2,4 ngày','0','buyer02']],
+        alt:{listTitle:'Danh sách lượt sử dụng (theo serial)',search:{ph:'Tìm kiếm theo serial, mã lệnh, tên nhóm/phòng ban, SĐT/email, tên người nhận',cols:['serial','code','group','rcp','phone']},hint:'Mỗi dòng là một lượt sử dụng của gift đã phát hành. Bấm mã lệnh để mở màn chi tiết lệnh.',
+          filters:()=>[F('Thời điểm sử dụng từ',RANGE[quick][0],'cal'),F('Thời điểm sử dụng đến',RANGE[quick][1],'cal'),VIEWSEL(),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Mã lệnh','Tất cả','dd'),F('Loại gift','Tất cả','dd'),F('Người tạo','Tất cả','dd'),F('Merchant / thương hiệu','Tất cả','dd'),F('Cửa hàng','Tất cả','dd'),F('Hình thức sử dụng','Tất cả','dd'),F('Kết quả','Tất cả (Thành công / Thất bại)','dd'),F('Giá trị sử dụng từ','0 (Tối thiểu)',''),F('Giá trị sử dụng đến','Không giới hạn','')],
+          cols:[C('serial','Serial gift'),C('code','Mã lệnh'),C('rcp','Người nhận'),C('phone','SĐT / Email'),C('type','Loại gift'),C('face','Mệnh giá',1),C('val','Giá trị sử dụng',1),C('when','Thời điểm sử dụng'),C('how','Hình thức sử dụng'),C('mc','Merchant'),C('store','Cửa hàng'),C('res','Kết quả'),C('addr','Địa chỉ cửa hàng',0,1),C('err','Lý do thất bại',0,1),C('group','Nhóm/phòng ban',0,1)],
+          rows:[['SN-8830211',st('link','LG-20261001-001'),'Nguyễn Văn A','09****321','Dùng 1 lần','500.000 đ','500.000 đ','02/10/2026 17:20','Qua kết nối Merchant','Highlands','Highlands Tràng Tiền',st('ok','Thành công'),'86 Tràng Tiền, Hà Nội','—','BMoney'],
+                ['SN-8830299',st('link','LG-20261002-003'),'Phạm Thị D','09****135','Dùng nhiều lần','200.000 đ','100.000 đ','03/10/2026 10:15','Do nội bộ thao tác','The Coffee House','TCH Nguyễn Huệ',st('ok','Thành công'),'12 Nguyễn Huệ, TP.HCM','—','Hero'],
+                ['SN-8830299',st('link','LG-20261002-003'),'Phạm Thị D','09****135','Dùng nhiều lần','200.000 đ','100.000 đ','04/10/2026 12:40','Qua kết nối Merchant','Highlands','Highlands Tràng Tiền',st('ok','Thành công'),'86 Tràng Tiền, Hà Nội','—','Hero'],
+                ['SN-8830300',st('link','LG-20261002-003'),'Hoàng Văn E','09****246','Dùng nhiều lần','200.000 đ','200.000 đ','04/10/2026 09:00','Qua kết nối Merchant','Highlands','Highlands Tràng Tiền',st('ok','Thành công'),'86 Tràng Tiền, Hà Nội','—','Hero'],
+                ['SN-8830213',st('link','LG-20261001-001'),'Lê Văn C','09****987','Dùng 1 lần','500.000 đ','0 đ','05/10/2026 11:02','Qua kết nối Merchant','Highlands','Highlands Tràng Tiền',st('red','Thất bại'),'86 Tràng Tiền, Hà Nội','Mã không hợp lệ','BMoney'],
+                ['SN-8830250',st('link','LG-20261001-001'),'Đỗ Thị G','09****579','Dùng 1 lần','500.000 đ','500.000 đ','05/10/2026 13:30','Ghi nhận bù sau đối soát','Highlands','Highlands Tràng Tiền',st('ok','Thành công'),'86 Tràng Tiền, Hà Nội','—','BMoney']]}
+      }
+    }}
+};
+let page='dash',state='data',tab={budget:'alloc',egift:'issue'},exportOff=false,colOpen=false;
+const hidden={}; // key page.tab -> Set id cột đang ẩn
+let usageView='batch';
+const isGiftView=()=>page==='egift'&&tab.egift==='redeem'&&usageView==='gift';
+const keyOf=()=>page+'.'+tab[page]+(isGiftView()?'.gift':'');
+const cfgOf=()=>{const b=PAGES[page].sets[tab[page]];return isGiftView()?{...b,...b.alt}:b};
+const hiddenSet=set=>hidden[keyOf()]??(hidden[keyOf()]=new Set(set.cols.filter(c=>c.hidden).map(c=>c.id)));
+
+const plain=c=>String(c).replace(/^@[^|]*\|/,'');
+const skelRows=(n,c)=>Array.from({length:n}).map(()=>`<tr>${Array.from({length:c}).map(()=>'<td><div class="skel"></div></td>').join('')}</tr>`).join('');
+const cell=c=>{if(typeof c==='string'&&c[0]==='@'){const [t,x]=c.slice(1).split('|');if(t==='link')return `<a class="lnk" href="#" title="Mở chi tiết lệnh ${x}" onclick="event.stopPropagation();return false">${x}</a>`;const map={orange:'b-warn',hold:'b-red'};return `<span class="badge b-${t}">${x}</span>`}return c};
+
+// ===== Thẻ số liệu (mô phỏng egift-stat-card) =====
+const T={slate:'#475467',info:'#3a4fb3',success:'#1e7a6a',hold:'#b42318',danger:'#c2185b',sky:'#026aa2'};
+const TYPES=['Dùng 1 lần','Dùng nhiều lần','Promotion','SKU'];
+const statCard=(l,v,t,bd,hint)=>`<div class="stat"><span class="l" style="color:${T[t]}"><i></i><span style="color:var(--text-2)">${l}</span></span><div class="v">${v}</div>${hint?`<div class="h">${hint}</div>`:''}${bd?`<div class="bd">${bd.map((x,i)=>`<span class="${['0','0 đ','—'].includes(x)?'zero':''}">${TYPES[i]}</span><b class="${['0','0 đ','—'].includes(x)?'zero':''}">${x}</b>`).join('')}</div>`:''}</div>`;
+const BUDGET=[['Tổng ngân sách','10.000.000 đ','slate'],['Đã phân bổ','6.000.000 đ','info'],['Chưa phân bổ','4.000.000 đ','success'],['Đã sử dụng','1.000.000 đ','slate'],['Đang giữ / Hold','500.000 đ','hold'],['Còn lại','8.500.000 đ','success']];
+const GIFT=[['Đã phát hành','98','slate',['60','38','0','0']],['Đã gửi','100','sky',['62','38','0','0']],['Gửi thành công','98','success',['60','38','0','0']],['Gửi thất bại','2','danger',['2','0','0','0']],['Đã redeem','61','info',['51','10','0','0']],['Giá trị redeem','30.500.000 đ','hold',['25.500.000 đ','5.000.000 đ','0 đ','0 đ']]];
+
+// ===== Line chart: chiều thời gian đổi theo bộ lọc nhanh =====
+// Hôm nay -> theo GIỜ; Tuần này -> theo NGÀY (T2..CN); Tháng này -> theo NGÀY; Tùy chọn -> theo NGÀY (>31 ngày: theo TUẦN, >12 tuần: theo THÁNG)
+function buckets(){
+  if(quick==='today'){const L=Array.from({length:24},(_,i)=>String(i).padStart(2,'0')+'h');return {unit:'giờ',labels:L,upto:14,tick:3}}
+  if(quick==='week'){return {unit:'ngày',labels:['T2 05/10','T3 06/10','T4 07/10','T5 08/10','T6 09/10','T7 10/10','CN 11/10'],upto:0,tick:1}}
+  if(quick==='month'){return {unit:'ngày',labels:Array.from({length:31},(_,i)=>String(i+1).padStart(2,'0')+'/10'),upto:4,tick:5}}
+  return {unit:'ngày',labels:['01/10','02/10','03/10','04/10','05/10'],upto:4,tick:1}
+}
+function line(){
+  const bk=buckets(),n=bk.labels.length,W=560,H=240,x0=56,max=8;
+  // dữ liệu mẫu lũy kế (triệu đ); chỉ vẽ tới mốc hiện tại, phần tương lai để trống
+  const alloc=Array.from({length:n},(_,i)=>i>bk.upto?null:(bk.unit==='giờ'?(i<9?0:6):(i<1?0:6)));
+  const used=Array.from({length:n},(_,i)=>i>bk.upto?null:(bk.unit==='giờ'?Math.min(1,Math.max(0,(i-9)*0.25)):[0,0,0,1,1][Math.min(i,4)]));
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}">`;
+  for(let i=0;i<=4;i++){const y=20+(H-60)*i/4;s+=`<line x1="${x0}" x2="${W-10}" y1="${y}" y2="${y}" stroke="#eee"/><text x="${x0-8}" y="${y+4}" font-size="10" text-anchor="end" fill="#666">${(max-max*i/4).toFixed(0)} tr</text>`}
+  const X=i=>x0+14+i*(W-x0-28)/Math.max(n-1,1),Y=v=>H-40-(H-60)*v/max;
+  [[alloc,'var(--c1)'],[used,'var(--c2)']].forEach(([a,c])=>{
+    const pts=a.map((v,i)=>v===null?null:[X(i),Y(v)]).filter(Boolean);
+    s+=`<polyline fill="none" stroke="${c}" stroke-width="2.5" points="${pts.map(p=>p.join(',')).join(' ')}"/>`;
+    if(n<=12)s+=pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="${c}"/>`).join('')});
+  bk.labels.forEach((l,i)=>{if(i%bk.tick===0)s+=`<text x="${X(i)}" y="${H-18}" font-size="11" text-anchor="middle" fill="#666">${l}</text>`});
+  s+=`<text x="${W-10}" y="12" font-size="11" text-anchor="end" fill="#666">Theo ${bk.unit}</text>`;
+  return s+'</svg>'}
+// Trạng thái loại trừ nhau, dùng đúng nhãn của portal: ItemStatus (chưa phát hành xong) + UsageState/GiftState (đã phát hành)
+const GIFT_STATUS=[
+  ['Chờ phát hành',3,'#d97706'],['Phát hành lỗi',2,'#dc2626'],['Không phát hành',0,'#9f1239'],['Đã hủy',2,'#a3a3a3'],
+  ['Chưa mở',19,'#7c8db5'],['Đã mở (chưa dùng)',14,'#3a4fb3'],['Đã dùng một phần',6,'#0e9f8e'],['Đã dùng hết',55,'#1e7a6a'],
+  ['Hết hạn',3,'#b54708'],['Bị khóa',1,'#7c2d12'],['Đã gộp',0,'#6d28d9']];
+function donut(items){
+  const tot=items.reduce((a,b)=>a+b[1],0),R=70,Cc=2*Math.PI*R;let off=0,s='<svg width="180" height="180" viewBox="0 0 180 180"><g transform="rotate(-90 90 90)">';
+  items.filter(it=>it[1]>0).forEach(it=>{const l=Cc*it[1]/tot;s+=`<circle cx="90" cy="90" r="${R}" fill="none" stroke="${it[2]}" stroke-width="26" stroke-dasharray="${l} ${Cc-l}" stroke-dashoffset="${-off}"/>`;off+=l});
+  s+=`</g><text x="90" y="88" text-anchor="middle" font-size="22" font-weight="700" fill="#1f1f1f">${tot}</text><text x="90" y="106" text-anchor="middle" font-size="11" fill="#666">gift</text></svg>`;
+  return `<div class="donutwrap">${s}<div class="legend leg2">${items.map(i=>`<span style="${i[1]===0?'opacity:.45':''}"><i style="background:${i[2]}"></i>${i[0]}: <b>${i[1]} (${Math.round(i[1]*100/tot)}%)</b></span>`).join('')}</div></div>`}
+
+// Chỉ vẽ lại phần bảng khi gõ tìm kiếm (giữ nguyên ô nhập, không mất focus)
+const pagerHtml=n=>`<div class="pl"><span>Hiển thị</span><span class="psel">10<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 9l6 6 6-6"/></svg></span><span>/${n} kết quả</span></div><div class="pr"><button class="pnav" disabled>Trước</button><button class="pgn cur">1</button><button class="pnav" disabled>Sau</button></div>`;
+function renderTable(){
+  if(page==='dash')return;
+  const set=cfgOf(),hs=hiddenSet(set),vis=set.cols.filter(c=>!hs.has(c.id)),idx=set.cols.map(c=>c.id);
+  const raw=qtext[keyOf()]||'',kw=norm(raw);
+  const shown=kw?set.rows.filter(r=>matchRow(r,set,kw)):set.rows;
+  $('#listTitle').innerHTML=set.listTitle+`<span class="cnt">${shown.length} bản ghi</span>`;
+  $('#tbody').innerHTML=shown.length?shown.map(r=>`<tr style="cursor:pointer">${vis.map(c=>`<td class="${c.r?'r':''}">${cell(r[idx.indexOf(c.id)])}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${vis.length}" style="text-align:center;padding:32px;color:var(--text-2)">Không tìm thấy dữ liệu phù hợp với "${raw.replace(/</g,'&lt;')}".</td></tr>`;
+  $('#pager').innerHTML=pagerHtml(shown.length);
+}
+function render(){
+  const noperm=state==='noperm',P=PAGES[page],L=state==='loading',D=state==='data',isDash=page==='dash';
+  $('#v403').classList.toggle('hide',!noperm);
+  $('#vmain').classList.toggle('hide',noperm);
+  $('#menuReports').classList.toggle('hide',noperm);
+  document.querySelectorAll('[data-p]').forEach(b=>b.classList.toggle('act',b.dataset.p===page));
+  $('#title').textContent=P.title;
+  const PURPOSE={dash:'Tổng quan nhanh ngân sách và gift của doanh nghiệp trong kỳ.','budget.alloc':'Theo dõi ngân sách đã phân bổ, thu hồi, điều chỉnh và chuyển giữa các nhóm/phòng ban.','budget.use':'Theo dõi ngân sách đã dùng, đang giữ và hoàn lại khi phát hành gift.','egift.issue':'Theo dõi các lệnh đã phát hành và kết quả gửi gift đến người nhận.','egift.redeem':'Theo dõi gift đã được sử dụng: giá trị đã dùng, nơi sử dụng và hình thức sử dụng.'};
+  $('#purpose').textContent=PURPOSE[page==='dash'?'dash':page+'.'+tab[page]]||'';
+  const set=isDash?null:cfgOf();
+  // tab
+  const tw=$('#tabsWrap');
+  if(P.tabs){tw.classList.remove('hide');tw.innerHTML=P.tabs.map(t=>`<button class="tab ${tab[page]===t[0]?'act':''}" data-t="${t[0]}">${t[1]}</button>`).join('');
+    tw.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{tab[page]=b.dataset.t;colOpen=false;render()})}
+  else tw.classList.add('hide');
+  // lọc nhanh
+  $('#quick').innerHTML=QUICK.map(q=>`<button class="pill ${quick===q[0]?'act':''}" data-q="${q[0]}">${q[1]}</button>`).join('')+`<button class="pill ${quick==='custom'?'act':''}" data-q="custom">Tùy chọn</button>`;
+  $('#quick').querySelectorAll('.pill').forEach(b=>b.onclick=()=>{quick=b.dataset.q;render()});
+  const kr=$('#kwRow');kr.classList.toggle('hide',isDash);
+  kr.className='kw'+(isDash?' hide':'')+((qtext[keyOf()]||'')?' has':'');
+  if(!isDash)kr.innerHTML=kwHtml(set.search.ph);
+  const f=(isDash?P.filters():set.filters());
+  $('#filters').style.gridTemplateColumns=isDash?'repeat(2,minmax(0,1fr))':'repeat(4,minmax(0,1fr))';
+  $('#filters').innerHTML=f.join('');
+  const vs=document.querySelector('[data-view]');if(vs&&vs.addEventListener)vs.onclick=()=>{usageView=usageView==='gift'?'batch':'gift';colOpen=false;render()};
+  $('#filterHint').textContent=isDash?P.hint:set.hint;
+  const qi=$('#q');
+  if(qi){qi.oninput=()=>{qtext[keyOf()]=qi.value.trim();$('#kwRow').classList.toggle('has',!!qi.value);renderTable()};
+    $('#qx').onclick=()=>{qtext[keyOf()]='';qi.value='';$('#kwRow').classList.remove('has');renderTable();qi.focus()}}
+  $('#alertErr').classList.toggle('hide',state!=='error');
+  $('#errMsg').textContent='Không tải được '+(isDash?'dashboard':'báo cáo')+'.';
+  const showData=D||L;
+  $('#emptyBox').classList.toggle('hide',state!=='empty');
+  // dashboard
+  $('#dash').classList.toggle('hide',!isDash||!showData);
+  if(isDash){
+    const sk='<div class="skelbox" style="height:64px"></div>';
+    $('#statsBudget').innerHTML=L?Array(6).fill(sk).join(''):BUDGET.map(x=>statCard(...x)).join('');
+    $('#statsGift').innerHTML=L?Array(6).fill('<div class="skelbox" style="height:140px"></div>').join(''):GIFT.map(x=>statCard(...x)).join('');
+    $('#ch1').innerHTML=L?'<div class="skelbox"></div>':line();
+    $('#ch2').innerHTML=L?'<div class="skelbox"></div>':donut(GIFT_STATUS);
+  }
+  // tổng quan (chỉ Báo cáo ngân sách) + cảnh báo
+  const ov=!isDash&&set.overview&&showData;
+  $('#overview').classList.toggle('hide',!ov);
+  if(ov)$('#overview').style.gridTemplateColumns='repeat('+(set.overview.length<=5?set.overview.length:set.overview.length===6?3:4)+',minmax(0,1fr))';
+  if(ov)$('#overview').innerHTML=L?Array(5).fill('<div class="skelbox" style="height:64px"></div>').join(''):set.overview.map(x=>statCard(x[0],x[1],x[2],x[4],x[3])).join('');
+  const wb=!isDash&&set.warn&&D;$('#warnBar').classList.toggle('hide',!wb);if(wb)$('#warnBar').innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg><span>'+set.warn+'</span>';
+  // danh sách
+  $('#listCard').classList.toggle('hide',isDash||!showData);
+  if(!isDash){
+    const hs=hiddenSet(set),vis=set.cols.filter(c=>!hs.has(c.id)),idx=set.cols.map(c=>c.id);
+    $('#listTitle').innerHTML=set.listTitle+`<span class="cnt">${set.rows.length} bản ghi</span>`;
+    $('#colsLabel').textContent=`Cột hiển thị (${vis.length}/${set.cols.length})`;
+    $('#btnExport').classList.toggle('hide',exportOff);$('#btnExport').disabled=!D;
+    $('#colPanel').classList.toggle('hide',!colOpen);
+    $('#colPanel').innerHTML=`<p>Cột hiển thị</p><div class="list">${set.cols.map(c=>{const on=!hs.has(c.id),lock=on&&vis.length===1;return `<button class="opt" data-c="${c.id}" ${lock?'disabled title="Bảng cần ít nhất 1 cột hiển thị"':''}><span class="cb ${on?'on':''}">${on?'<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg>':''}</span><span>${c.h}</span></button>`}).join('')}</div><div class="foot"><button style="color:var(--primary-text)" data-act="all">Hiện tất cả</button><button style="color:var(--text-2)" data-act="def">Mặc định</button></div>`;
+    $('#colPanel').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const id=b.dataset.c;hs.has(id)?hs.delete(id):hs.add(id);render()});
+    $('#colPanel').querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{hs.clear();if(b.dataset.act==='def')set.cols.filter(c=>c.hidden).forEach(c=>hs.add(c.id));render()});
+    $('#thead').innerHTML='<tr>'+vis.map(c=>`<th class="${c.r?'r':''}">${c.h}</th>`).join('')+'</tr>';
+    const kw=norm(qtext[keyOf()]||'');
+    const shown=kw?set.rows.filter(r=>matchRow(r,set,kw)):set.rows;
+    $('#listTitle').innerHTML=set.listTitle+`<span class="cnt">${shown.length} bản ghi</span>`;
+    $('#ovl').classList.toggle('hide',!L);
+    $('#tbody').innerHTML=L?'':shown.length?shown.map(r=>`<tr style="cursor:pointer">${vis.map(c=>`<td class="${c.r?'r':''}">${cell(r[idx.indexOf(c.id)])}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${vis.length}" style="text-align:center;padding:32px;color:var(--text-2)">Không tìm thấy dữ liệu phù hợp với "${(qtext[keyOf()]||'').replace(/</g,'&lt;')}".</td></tr>`;
+    $('#pager').innerHTML=pagerHtml(shown.length);
+  }
+}
+$('#btnCols').onclick=()=>{colOpen=!colOpen;render()};
+document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{state=b.dataset.s;document.querySelectorAll('[data-s]').forEach(x=>x.classList.toggle('on',x===b));render()});
+document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{exportOff=b.dataset.e==='off';document.querySelectorAll('[data-e]').forEach(x=>x.classList.toggle('on',x===b));render()});
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{page=b.dataset.p;colOpen=false;render()});
+render();
+</script>
 </body>
 </html>
