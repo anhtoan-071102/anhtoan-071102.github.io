@@ -189,6 +189,31 @@ tr.tot td{background:transparent;font-weight:inherit}
 .pager .pnav:disabled{cursor:not-allowed;color:#a3a3a3;font-weight:400}
 .pager .pgn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:#fff;color:var(--text-2);font-size:14px;font-family:inherit;cursor:pointer}
 .pager .pgn.cur{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:700}
+.stat.tc{padding:16px;gap:0}
+.tc .tt1{display:flex;align-items:center;font-size:13px;font-weight:500;color:var(--text-2)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;flex-shrink:0}
+.tc .hl{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:8px 0 12px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.tc .big{font-size:24px;font-weight:700;line-height:1.1;color:var(--text)}
+.tc .big small{font-size:13px;font-weight:500;color:var(--text-2);margin-left:6px}
+.tc .bigv{font-size:15px;font-weight:600;color:var(--text-2);white-space:nowrap}
+.mt{width:100%;border-collapse:collapse;font-size:13px}
+.mt th{padding:0 0 6px;font-size:12px;font-weight:500;color:#8a8a8a;text-align:left;background:transparent;border:0}
+.mt td{padding:7px 0;border:0;border-top:1px solid #f0f0f0;color:var(--text);background:transparent}
+.mt th.r,.mt td.r{text-align:right;font-variant-numeric:tabular-nums}
+.mt tr.z td{color:#b0b0b0}
+.mt .sq{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:8px;vertical-align:1px}
+.mt tr+tr td{border-top:1px solid #f0f0f0}
+.fld input.dt,.fld input.tx{border:0;background:transparent;outline:none;font:inherit;font-size:14px;color:var(--text);width:100%;padding:0}
+.fld input.tx::placeholder{color:#6b6b6b}
+.fld:focus-within{border-color:#f18a8e}
+.fld .v .ph{color:#6b6b6b}.fld .v span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ddp{position:absolute;z-index:60;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 24px rgba(17,24,39,.12);padding:6px 0;max-height:300px;overflow:auto}
+.ddp .opt{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border:0;background:none;text-align:left;font:inherit;font-size:14px;cursor:pointer}
+.ddp .opt:hover{background:var(--muted)}.ddp .opt.on{color:var(--primary-text);font-weight:600}
+.ddp .foot{display:flex;justify-content:flex-end;border-top:1px solid var(--border);margin-top:4px;padding:6px 12px 2px}
+.ddp .foot button{border:0;background:none;font:inherit;font-size:13px;font-weight:500;color:var(--primary-text);cursor:pointer}
+.ddp .none{padding:10px 12px;color:var(--text-2);font-size:13px}
+.toast{position:fixed;right:24px;bottom:24px;z-index:80;background:#262626;color:#fff;border-radius:12px;padding:12px 16px;font-size:14px;max-width:360px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
 </style>
 </head>
 <body>
@@ -200,11 +225,10 @@ tr.tot td{background:transparent;font-weight:inherit}
   <button data-s="loading">Đang tải</button>
   <button data-s="empty">Chưa có dữ liệu</button>
   <button data-s="error">Lỗi tải</button>
-  <button data-s="noperm">Không có quyền (403)</button>
   <span class="sep"></span>
-  Quyền export:
-  <button data-e="on" class="on">Có</button>
-  <button data-e="off">Không</button>
+  Tài khoản:
+  <button data-b="parent" class="on">Business cha</button>
+  <button data-b="child">Business con</button>
 </div>
 
 <div class="shell">
@@ -255,11 +279,12 @@ tr.tot td{background:transparent;font-weight:inherit}
           <div class="frow"><div class="pills" id="quick"></div></div>
           <div class="fgroup"><div id="kwRow" class="kw hide"></div><div class="grid4" id="filters"></div></div>
           <span id="filterHint" class="hide"></span>
-          <div class="actions"><button class="btn">Đặt lại</button><button class="btn pri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Tìm kiếm</button></div>
+          <div class="actions"><button class="btn" id="btnReset">Đặt lại</button><button class="btn pri" id="btnApply"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Tìm kiếm</button></div>
         </div>
 
         <div id="overview" class="stats5 hide"></div>
         <div id="warnBar" class="warnbar hide"></div>
+        <div id="chanCard" class="card hide"><h3>Kết quả theo kênh</h3><div class="tw"><table><thead><tr><th>Kênh</th><th class="r">Số gift gửi</th><th class="r">Thành công</th><th class="r">Thất bại</th><th class="r">Đang gửi</th><th class="r">Tỷ lệ thành công</th><th class="r">Phí gửi</th></tr></thead><tbody id="chanBody"></tbody></table></div></div>
         <div id="alertErr" class="alert hide"><span id="errMsg">Không tải được báo cáo.</span><button class="btn sm">Thử lại</button></div>
 
         <!-- Dashboard: 6 thẻ ngân sách + 6 thẻ gift + 2 chart -->
@@ -290,100 +315,145 @@ tr.tot td{background:transparent;font-weight:inherit}
   </div>
 </div>
 
+<div id="ddp" class="ddp hide"></div><div id="toast" class="toast hide"></div>
 <script>
 const $=s=>document.querySelector(s);
 const ico={cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',dd:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>'};
-const F=(label,val,type)=>`<div class="fld"><label>${label}</label><div class="v">${val}${ico[type]||''}</div></div>`;
+const fdraft={},fapp={};                                   // bộ lọc nháp / đã áp dụng, tách riêng theo từng màn + chế độ xem
+const fget=(st,l)=>(st[keyOf()]||{})[l];
+const fset=(st,l,v)=>{(st[keyOf()]??(st[keyOf()]={}))[l]=v};
+const iso=d=>d.split('/').reverse().join('-');
+const F=(label,val,type)=>{
+  if(type==='cal'){const v=fget(fdraft,label)??iso(val);return `<div class="fld"><label>${label}</label><input class="dt" type="date" data-f="${label}" value="${v}"></div>`}
+  if(type==='dd'){const sel=fget(fdraft,label)||[];const txt=sel.length?(sel.length<=2?sel.join(', '):sel.length+' mục đã chọn'):val;
+    return `<div class="fld sel" data-f="${label}"><label>${label}</label><div class="v"><span class="${sel.length?'':'ph'}">${txt}</span>${ico.dd}</div></div>`}
+  const t=(fget(fdraft,label)||[''])[0]||'';return `<div class="fld"><label>${label}</label><input class="tx" type="text" data-f="${label}" placeholder="${val}" value="${t}"></div>`};
 // ===== Lọc nhanh: giống admin portal (Hôm nay / Tuần này T2–CN / Tháng này / Tùy chọn). Hôm nay giả định = Thứ Hai 05/10/2026 14:00 =====
 const QUICK=[['today','Hôm nay'],['week','Tuần này'],['month','Tháng này']];
 const RANGE={today:['05/10/2026','05/10/2026'],week:['05/10/2026','11/10/2026'],month:['01/10/2026','31/10/2026'],custom:['01/10/2026','05/10/2026']};
 let quick='month';
 const kyFilters=()=>[F('Từ ngày',RANGE[quick][0],'cal'),F('Đến ngày',RANGE[quick][1],'cal')];
-const VIEWSEL=()=>`<div class="fld sel" data-view="1"><label>Xem theo</label><div class="v">${usageView==='gift'?'Theo serial (lượt sử dụng)':'Theo lệnh'}${ico.dd}</div></div>`;
+const VIEWSEL=()=>`<div class="fld sel" data-f="Xem theo"><label>Xem theo <span style="color:var(--primary-text)">*</span></label><div class="v"><span>${usageView==='gift'?'Theo serial (từng gift)':'Theo lệnh'}</span>${ico.dd}</div></div>`;
 const SEARCH=(label,ph)=>`<div class="search ${(qtext[keyOf()]||'')?'has':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><div class="tx" style="flex:1"><label>${label}</label><input id="q" type="text" maxlength="100" autocomplete="off" placeholder="${ph}" value="${(qtext[keyOf()]||'').replace(/"/g,'&quot;')}"></div><button class="x" id="qx" title="Xóa">×</button></div>`;
 const qtext={};
 const kwHtml=ph=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="q" type="text" maxlength="100" autocomplete="off" placeholder="${ph}" value="${(qtext[keyOf()]||'').replace(/"/g,'&quot;')}"><button class="x" id="qx" title="Xóa">×</button>`;
+const FMAP={'Nhóm/phòng ban':['group','from','to'],'Mã lệnh':['code'],'Trạng thái lệnh':['status'],'Trạng thái gửi':['sstat'],'Trạng thái phát hành':['istat'],'Kênh gửi':['ch'],'Người tạo':['by'],'Người thực hiện':['actor'],'Trạng thái':['status'],'Loại giao dịch':['type'],'Loại gift':['type'],'Trạng thái sử dụng':['ustate'],'Thương hiệu':['mc','brand'],'Cửa hàng':['store'],'Hình thức sử dụng':['how'],'Account ngân sách':['acc','from','to'],'Doanh nghiệp':['biz']};
+const STATIC=()=>({'Loại gift':TYPES,'Doanh nghiệp':['Công ty A','Công ty B','Công ty C'],'Account ngân sách':['Account Marketing','Account Vận hành'],'Thương hiệu':['Highlands','The Coffee House','Đa thương hiệu'],'Cửa hàng':['Highlands Tràng Tiền','TCH Nguyễn Huệ'],
+  'Hình thức sử dụng':['Qua kết nối Merchant','Do nội bộ thao tác','Ghi nhận bù sau đối soát','Đổi qua Miniapp','Đổi qua Link công khai'],'Trạng thái sử dụng':['Chưa sử dụng','Sử dụng một phần','Đã sử dụng','Hết hạn'],
+  'Trạng thái phát hành':['Chờ phát hành','Đã phát hành','Phát hành lỗi','Không phát hành','Đã hủy'],'Trạng thái gửi':['Chờ gửi','Đang gửi','Thành công','Thành công một phần','Thất bại'],
+  'Trạng thái lệnh':['Nháp','Chờ phê duyệt','Đã lên lịch','Đang gửi','Hoàn thành','Gửi tin lỗi','Đã hủy','Từ chối'],'Kênh gửi':['SMS','Email','ZNS']});
+const derive=label=>{const set=cfgOf(),ids=set.cols.map(c=>c.id),cols=(FMAP[label]||[]).filter(i=>ids.includes(i));const out=new Set();set.rows.forEach(r=>cols.forEach(id=>{const v=plain(r[ids.indexOf(id)]);if(v&&v!=='—')out.add(v)}));return [...out]};
+const optsFor=label=>STATIC()[label]||derive(label);
+const passFilters=(r,set)=>{const f=fapp[keyOf()]||{},ids=set.cols.map(c=>c.id);
+  return Object.entries(f).every(([label,v])=>{if(!Array.isArray(v)||!v.length||!v[0])return true;const cols=(FMAP[label]||[]).filter(id=>ids.includes(id));if(!cols.length)return true;
+    return cols.some(id=>{const cell=plain(r[ids.indexOf(id)]);return v.some(x=>cell===x||(label==='Kênh gửi'&&cell.split(', ').includes(x)))})})};
 const matchRow=(r,set,kw)=>{if(!kw)return true;const ids=set.cols.map(c=>c.id);const use=(set.search&&set.search.cols)||ids;return use.some(id=>{const i=ids.indexOf(id);return i>=0&&norm(plain(r[i])).includes(kw)})};
 const norm=x=>String(x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').toLowerCase().trim();
 const st=(t,c)=>`@${t}|${c}`; // badge: @tone|text
 
 // ===== Cột: id, header, align right?, hiển thị mặc định? (khớp EgiftTableColumn) =====
 const C=(id,h,r,hidden)=>({id,h,r:!!r,hidden:!!hidden});
+const T={slate:'#475467',info:'#3a4fb3',success:'#1e7a6a',hold:'#b42318',danger:'#c2185b',sky:'#026aa2'};
+const TYPES=['Dùng 1 lần','Dùng nhiều lần','Promotion gift','SKU'];
+const money=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.')+' đ';
+const U=500000;                                   // đơn giá mẫu mỗi gift
+const cv=a=>a.map(c=>`${c} · ${money(c*U)}`);      // [số lượng · số tiền] theo từng loại
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const gt=(title,counts,values,tone)=>{const v=values||counts.map(c=>c*U);return {tbl:1,title,tone:tone||'slate',heads:['Phân loại','Số lượng','Giá trị'],rows:TYPES.map((t,i)=>[t,String(counts[i]),money(v[i])]),total:['Tổng',String(sum(counts)),money(sum(v))]}};
+const gc=(l,counts,t,values)=>gt(l,counts,values,t);   // thẻ gift: số lượng + giá trị chia theo 4 loại, trong cùng một thẻ
+const isZero=x=>/^(0|—)(\s|$)/.test(x);
+let isParent=true;
+const BIZ=()=>isParent?[F('Doanh nghiệp','Tất cả doanh nghiệp','dd')]:[];
 const PAGES={
-  dash:{title:'Dashboard',tabs:null,filters:()=>kyFilters(),hint:'Mặc định hiển thị tháng này.'},
+  dash:{title:'Dashboard',tabs:null,filters:()=>[...kyFilters(),...BIZ()]},
   budget:{title:'Báo cáo ngân sách',tabs:[['alloc','Phân bổ'],['use','Sử dụng']],
     sets:{
       alloc:{
-        listTitle:'Danh sách giao dịch phân bổ',search:{ph:'Tìm kiếm theo mã giao dịch, tên nhóm/phòng ban',cols:['code','group']},
-        filters:()=>[...kyFilters(),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Loại giao dịch','Tất cả','dd'),F('Nguồn ngân sách','Tất cả','dd'),F('Người thực hiện','Tất cả','dd'),F('Trạng thái','Tất cả','dd')],
-        hint:'Bấm một dòng để xem chi tiết giao dịch.',
-        overview:[['Tổng phân bổ','6.000.000 đ','info'],['Tổng điều chỉnh','0 đ','slate'],['Tổng thu hồi','0 đ','danger'],['Tổng chuyển giữa nhóm','0 đ','sky'],['Còn lại chưa phân bổ','4.000.000 đ','success'],['Tỷ lệ phân bổ','60,0%','info']],
-        cols:[C('code','Mã giao dịch'),C('time','Thời gian'),C('type','Loại giao dịch'),C('group','Nhóm/phòng ban'),C('source','Nguồn ngân sách'),C('amount','Số tiền',1),C('gb','Số dư nhóm trước',1,1),C('ga','Số dư nhóm sau',1),C('pool','Còn lại chưa phân bổ sau',1),C('actor','Người thực hiện'),C('status','Trạng thái'),C('reason','Lý do',0,1)],
-        rows:[['PB-2','03/10/2026 14:40',st('info','Phân bổ'),'Hero','Ngân sách chưa phân bổ','+500.000 đ','0 đ','500.000 đ','4.000.000 đ','biz7k3m9q2x-admin',st('ok','Thành công'),'Ngân sách quý 4'],
-              ['PB-1','01/10/2026 09:12',st('info','Phân bổ'),'BMoney','Ngân sách chưa phân bổ','+5.500.000 đ','0 đ','5.500.000 đ','4.500.000 đ','biz7k3m9q2x-admin',st('ok','Thành công'),'Ngân sách quý 4'],
-              ['TH-3','02/10/2026 11:03',st('orange','Thu hồi'),'BMoney','Ngân sách chưa phân bổ','-100.000 đ','5.600.000 đ','5.500.000 đ','4.100.000 đ','biz7k3m9q2x-admin',st('ok','Thành công'),'Điều chuyển dự án'],
-              ['CH-4','04/10/2026 16:20',st('sky','Chuyển'),'Hero','BMoney','+200.000 đ','500.000 đ','700.000 đ','4.000.000 đ','biz7k3m9q2x-admin',st('ok','Thành công'),'—']]},
+        listTitle:'Danh sách giao dịch phân bổ',emptyMsg:'Không có giao dịch phân bổ nào phù hợp với điều kiện lọc.',search:{ph:'Tìm kiếm theo mã giao dịch, tên nhóm/phòng ban',cols:['code','from','to']},
+        filters:()=>[...kyFilters(),...BIZ(),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Account ngân sách','Tất cả','dd'),F('Loại giao dịch','Tất cả','dd'),F('Người thực hiện','Tất cả','dd'),F('Trạng thái','Tất cả','dd')],
+        overview:[['Tổng phân bổ','6.000.000 đ','info'],['Tổng điều chỉnh','200.000 đ','slate'],['Tổng thu hồi','100.000 đ','danger'],['Còn lại chưa phân bổ','4.100.000 đ','success'],['Tỷ lệ phân bổ','59,0%','info']],
+        cols:[C('code','Mã giao dịch'),C('time','Thời gian'),C('type','Loại giao dịch'),C('from','Trừ từ'),C('to','Cộng vào'),C('amount','Số tiền',1),C('fa','Số dư bên trừ sau',1),C('ta','Số dư bên cộng sau',1),C('actor','Người thực hiện'),C('status','Trạng thái'),C('reason','Lý do',0,1)],
+        rows:[['ĐC-4','04/10/2026 16:20',st('orange','Điều chỉnh'),'BMoney','Hero','200.000 đ','5.200.000 đ','700.000 đ','biz7k3m9q2x-admin',st('ok','Thành công'),'Điều chuyển giữa phòng ban'],
+              ['PB-2','03/10/2026 14:40',st('info','Phân bổ'),'Account Marketing','Hero','500.000 đ','4.100.000 đ','500.000 đ','biz7k3m9q2x-admin',st('ok','Thành công'),'Ngân sách quý 4'],
+              ['TH-3','02/10/2026 11:03',st('hold','Thu hồi'),'BMoney','Account Marketing','100.000 đ','5.400.000 đ','4.600.000 đ','biz7k3m9q2x-admin',st('ok','Thành công'),'Điều chỉnh dự án'],
+              ['PB-1','01/10/2026 09:12',st('info','Phân bổ'),'Account Marketing','BMoney','5.500.000 đ','4.500.000 đ','5.500.000 đ','biz7k3m9q2x-admin',st('ok','Thành công'),'Ngân sách quý 4']]},
       use:{
-        listTitle:'Danh sách giao dịch sử dụng ngân sách',search:{ph:'Tìm kiếm theo mã lệnh, tên nhóm/phòng ban',cols:['code','group']},
-        filters:()=>[...kyFilters(),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Loại giao dịch','Tất cả','dd'),F('Người thực hiện','Tất cả','dd'),F('Trạng thái','Tất cả','dd')],
-        hint:'Bấm mã lệnh để mở màn chi tiết lệnh.',
+        listTitle:'Danh sách giao dịch sử dụng ngân sách',emptyMsg:'Không có giao dịch sử dụng ngân sách nào phù hợp với điều kiện lọc.',search:{ph:'Tìm kiếm theo mã lệnh, tên nhóm/phòng ban',cols:['code','group']},
+        filters:()=>[...kyFilters(),...BIZ(),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Account ngân sách','Tất cả','dd'),F('Loại giao dịch','Tất cả','dd'),F('Người thực hiện','Tất cả','dd'),F('Trạng thái','Tất cả','dd')],
         warn:'Có <b>1 nhóm</b> dùng ngân sách cao bất thường: <b>BMoney</b>.',
-        overview:[['Đã sử dụng','1.000.000 đ','slate'],['Tỷ lệ sử dụng','16,7%','info'],['Đang giữ / chờ xử lý','500.000 đ','hold'],['Đã release (hủy / lỗi)','0 đ','sky'],['Hoàn lại','0 đ','success'],['Còn lại','4.500.000 đ','info'],['Số nhóm vượt cảnh báo','1 nhóm','danger']],
-        cols:[C('code','Mã lệnh'),C('time','Thời gian'),C('type','Loại giao dịch'),C('group','Nhóm/phòng ban'),C('amount','Số tiền',1),C('before','Số dư trước giao dịch',1),C('after','Số dư sau giao dịch',1),C('actor','Người thực hiện'),C('status','Trạng thái')],
-        rows:[[st('link','LG-20261004-006'),'04/10/2026 17:10',st('hold','Giữ tiền'),'Hero','-200.000 đ','500.000 đ','300.000 đ','buyer02',st('hold','Đang giữ')],
-              [st('link','LG-20261001-001'),'04/10/2026 08:30',st('ok','Phát hành'),'BMoney','-1.000.000 đ','4.200.000 đ','4.200.000 đ','buyer01',st('ok','Đã trừ')],
-              [st('link','LG-20261003-005'),'03/10/2026 10:05',st('hold','Giữ tiền'),'BMoney','-300.000 đ','4.500.000 đ','4.200.000 đ','buyer01',st('hold','Đang giữ')],
-              [st('link','LG-20261001-001'),'02/10/2026 09:00',st('hold','Giữ tiền'),'BMoney','-1.000.000 đ','5.500.000 đ','4.500.000 đ','buyer01',st('hold','Đang giữ')]]}
+        overview:[['Tổng ngân sách (cuối kỳ)','10.000.000 đ','slate'],['Đã sử dụng','1.000.000 đ','slate'],['Tỷ lệ sử dụng','10,0%','info'],['Đang giữ / chờ xử lý','500.000 đ','hold'],['Đã release (hủy / lỗi)','0 đ','sky'],['Hoàn lại','0 đ','success'],['Còn lại','4.500.000 đ','info'],['Số nhóm vượt cảnh báo','1 nhóm','danger']],
+        cols:[C('code','Mã lệnh'),C('time','Thời gian'),C('type','Loại giao dịch'),C('group','Nhóm/phòng ban'),C('acc','Account ngân sách'),C('amount','Số tiền',1),C('before','Số dư trước giao dịch',1),C('after','Số dư sau giao dịch',1),C('actor','Người thực hiện'),C('status','Trạng thái')],
+        rows:[[st('link','LG-20261004-006'),'04/10/2026 17:10',st('hold','Giữ tiền'),'Hero','Account Marketing','-200.000 đ','500.000 đ','300.000 đ','buyer02',st('hold','Đang giữ')],
+              [st('link','LG-20261001-001'),'04/10/2026 08:30',st('ok','Phát hành'),'BMoney','Account Marketing','-1.000.000 đ','4.200.000 đ','4.200.000 đ','buyer01',st('ok','Đã trừ')],
+              [st('link','LG-20261003-005'),'03/10/2026 10:05',st('hold','Giữ tiền'),'BMoney','Account Marketing','-300.000 đ','4.500.000 đ','4.200.000 đ','buyer01',st('hold','Đang giữ')],
+              [st('link','LG-20261001-001'),'02/10/2026 09:00',st('hold','Giữ tiền'),'BMoney','Account Marketing','-1.000.000 đ','5.500.000 đ','4.500.000 đ','buyer01',st('hold','Đang giữ')]]}
     }},
   egift:{title:'Báo cáo eGift',tabs:[['issue','Phát hành & gửi'],['redeem','Sử dụng']],
     sets:{
-      issue:{listTitle:'Danh sách lệnh phân phối',search:{ph:'Tìm kiếm theo mã lệnh, tên lệnh, tên nhóm/phòng ban, mã gift, serial, SĐT/email, tên người nhận',cols:['code','name','group']},hint:'Mỗi dòng là một lô (mã lệnh). Bấm mã lệnh để mở màn chi tiết lệnh.',
-        filters:()=>[F('Thời gian gửi từ',RANGE[quick][0],'cal'),F('Thời gian gửi đến',RANGE[quick][1],'cal'),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Mã lệnh','Tất cả','dd'),F('Trạng thái lệnh','Tất cả trạng thái','dd'),F('Trạng thái gửi','Tất cả','dd'),F('Kênh gửi','Tất cả','dd'),F('Người tạo','Tất cả','dd'),F('Loại gift','Tất cả','dd')],
-        overview:[['Tổng đã phát hành','200','slate',null,['150','50','0','0']],['Tổng gửi thành công','156','success',null,['106','50','0','0']],['Gửi thất bại','32','danger',null,['32','0','0','0']],['Đang gửi','12','info',null,['12','0','0','0']],['Chờ gửi','40','sky',null,['40','0','0','0']]],
-        cols:[C('code','Mã lệnh'),C('name','Tên lệnh'),C('group','Nhóm/phòng ban'),C('status','Trạng thái lệnh'),C('sstat','Trạng thái gửi'),C('ch','Kênh gửi'),C('gifts','Số gift',1),C('val','Tổng tiền (quà + phí)',1),C('giftamt','Tiền quà',1,1),C('fee','Phí gửi',1,1),C('issued','Đã phát hành',1),C('sent','Gửi thành công',1),C('fail','Gửi thất bại',1),C('sending','Đang gửi',1,1),C('pend','Chờ gửi',1,1),C('rate','Tỷ lệ gửi thành công',1),C('rs','Số gift đã gửi lại',1,1),C('err','Lỗi gửi phổ biến',0,1),C('sendt','Thời gian gửi'),C('created','Ngày tạo',0,1),C('by','Người tạo')],
-        rows:[[st('link','LG-20261001-001'),'Thưởng tháng 10','BMoney',st('red','Gửi tin lỗi'),st('orange','Thành công một phần'),'SMS, Email','100','50.050.000 đ','50.000.000 đ','50.000 đ','100','98','2','0','0','98,0%','2','Số điện thoại sai (2)','01/10/2026 09:30','01/10/2026','buyer01'],
+      issue:{listTitle:'Danh sách lệnh phân phối',emptyMsg:'Không có lệnh phân phối nào phù hợp với điều kiện lọc.',search:{ph:'Tìm kiếm theo mã lệnh, tên lệnh, tên nhóm/phòng ban, mã gift, serial, SĐT/email, tên người nhận',cols:['code','name','group']},
+        filters:()=>[F('Thời gian gửi từ',RANGE[quick][0],'cal'),F('Thời gian gửi đến',RANGE[quick][1],'cal'),VIEWSEL(),...BIZ(),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Mã lệnh','Tất cả','dd'),F('Trạng thái lệnh','Tất cả trạng thái','dd'),F('Trạng thái gửi','Tất cả','dd'),F('Kênh gửi','Tất cả','dd'),F('Người tạo','Tất cả','dd'),F('Loại gift','Tất cả','dd')],
+        overview:[gc('Tổng đã phát hành',[150,50,0,0],'slate'),gc('Tổng gửi thành công',[106,50,0,0],'success'),gc('Gửi thất bại',[32,0,0,0],'danger'),gc('Đang gửi',[12,0,0,0],'info'),gc('Chờ gửi',[40,0,0,0],'sky')],
+        channels:[['SMS','150','112','32','6','74,7%','75.000 đ'],['Email','100','98','2','0','98,0%','0 đ'],['ZNS','70','64','0','6','91,4%','21.000 đ']],
+        cols:[C('code','Mã lệnh'),C('name','Tên lệnh'),C('group','Nhóm/phòng ban'),C('status','Trạng thái lệnh'),C('sstat','Trạng thái gửi'),C('ch','Kênh gửi'),C('gifts','Số gift',1),C('val','Tổng tiền (quà + phí)',1),C('giftamt','Tiền quà',1,1),C('fee','Phí gửi',1,1),C('issued','Đã phát hành',1),C('sent','Gửi thành công',1),C('fail','Gửi thất bại',1),C('sending','Đang gửi',1,1),C('pend','Chờ gửi',1,1),C('rate','Tỷ lệ gửi thành công',1),C('rs','Số lần gửi lại',1,1),C('err','Lỗi gửi phổ biến',0,1),C('sendt','Thời gian gửi'),C('created','Ngày tạo',0,1),C('by','Người tạo')],
+        rows:[[st('link','LG-20261001-001'),'Thưởng tháng 10','BMoney',st('red','Gửi tin lỗi'),st('orange','Thành công một phần'),'SMS, Email','100','50.050.000 đ','50.000.000 đ','50.000 đ','100','98','2','0','0','98,0%','4','Số điện thoại sai (2)','01/10/2026 09:30','01/10/2026','buyer01'],
               [st('link','LG-20261002-003'),'Quà sinh nhật Q4','Hero',st('ok','Hoàn thành'),st('ok','Thành công'),'ZNS','50','10.015.000 đ','10.000.000 đ','15.000 đ','50','50','0','0','0','100%','0','—','02/10/2026 14:05','02/10/2026','buyer02'],
               [st('link','LG-20261003-005'),'Thưởng quý 4','BMoney',st('sky','Đã lên lịch'),st('sky','Chờ gửi'),'SMS','40','20.020.000 đ','20.000.000 đ','20.000 đ','0','0','0','0','40','—','0','—','15/10/2026 08:00','03/10/2026','buyer01'],
-              [st('link','LG-20261004-007'),'Chiến dịch tri ân','Hero',st('red','Gửi tin lỗi'),st('red','Thất bại'),'SMS','30','6.015.000 đ','6.000.000 đ','15.000 đ','30','0','30','0','0','0%','30','Nhà mạng từ chối (30)','04/10/2026 10:00','04/10/2026','buyer02'],
+              [st('link','LG-20261004-007'),'Chiến dịch tri ân','Hero',st('red','Gửi tin lỗi'),st('red','Thất bại'),'SMS','30','6.015.000 đ','6.000.000 đ','15.000 đ','30','0','30','0','0','0%','60','Nhà mạng từ chối (30)','04/10/2026 10:00','04/10/2026','buyer02'],
               [st('link','LG-20261005-009'),'Quà khai trương','BMoney',st('info','Đang gửi'),st('info','Đang gửi'),'SMS, ZNS','20','4.016.000 đ','4.000.000 đ','16.000 đ','20','8','0','12','0','40,0%','0','—','05/10/2026 13:58','05/10/2026','buyer01'],
-              [st('link','LG-20261005-010'),'Quà đối tác','Hero',st('warn','Chờ phê duyệt'),'—','Email','15','3.000.000 đ','3.000.000 đ','0 đ','0','0','0','0','0','—','0','—','—','05/10/2026','buyer02']]},
-      redeem:{listTitle:'Danh sách sử dụng gift theo lệnh',search:{ph:'Tìm kiếm theo mã lệnh, tên lệnh, tên nhóm/phòng ban, mã gift, serial, SĐT/email, tên người nhận',cols:['code','name','group']},hint:'Bấm mã lệnh để mở màn chi tiết lệnh.',
-        filters:()=>[F('Thời gian gửi từ',RANGE[quick][0],'cal'),F('Thời gian gửi đến',RANGE[quick][1],'cal'),VIEWSEL(),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Mã lệnh','Tất cả','dd'),F('Trạng thái lệnh','Tất cả trạng thái','dd'),F('Loại gift','Tất cả','dd'),F('Người tạo','Tất cả','dd'),F('Trạng thái sử dụng','Tất cả','dd'),F('Merchant / thương hiệu','Tất cả','dd'),F('Hình thức sử dụng','Tất cả','dd')],
-        overview:[['Đã sử dụng','87','info',null,['61','26','0','0']],['Giá trị đã sử dụng','35.100.000 đ','hold',null,['30.500.000 đ','4.600.000 đ','0 đ','0 đ']],['Dùng một phần','6','sky',null],['Chưa sử dụng','58','slate',null,['36','22','0','0']],['Hết hạn','5','danger',null,['3','2','0','0']],['Số dư còn lại','5.000.000 đ','success',null],['Tỷ lệ redeem','58,0%','info',null,['61,0%','52,0%','—','—']],['TB từ gửi đến dùng','2,0 ngày','slate',null,['1,8 ngày','2,4 ngày','—','—']]],
-        cols:[C('code','Mã lệnh'),C('name','Tên lệnh'),C('group','Nhóm/phòng ban'),C('status','Trạng thái lệnh',0,1),C('sendt','Thời gian gửi',0,1),C('iss','Đã phát hành',1),C('used','Đã sử dụng',1),C('part','Trong đó dùng một phần',1),C('un','Chưa sử dụng',1),C('exp','Hết hạn',1),C('rate','Tỷ lệ redeem',1),C('val','Giá trị đã sử dụng',1),C('bal','Số dư còn lại',1),C('avg','TB gửi → dùng',1),C('fail','Gift có redeem thất bại',1,1),C('by','Người tạo',0,1)],
-        rows:[[st('link','LG-20261001-001'),'Thưởng tháng 10','BMoney',st('red','Gửi tin lỗi'),'01/10/2026 09:30','100','61','0','36','3','61,0%','30.500.000 đ','—','1,8 ngày','2','buyer01'],
-              [st('link','LG-20261002-003'),'Quà sinh nhật Q4','Hero',st('ok','Hoàn thành'),'02/10/2026 14:05','50','26','6','22','2','52,0%','4.600.000 đ','5.000.000 đ','2,4 ngày','0','buyer02']],
-        alt:{listTitle:'Danh sách lượt sử dụng (theo serial)',search:{ph:'Tìm kiếm theo serial, mã lệnh, tên nhóm/phòng ban, SĐT/email, tên người nhận',cols:['serial','code','group','rcp','phone']},hint:'Mỗi dòng là một lượt sử dụng của gift đã phát hành. Bấm mã lệnh để mở màn chi tiết lệnh.',
-          filters:()=>[F('Thời điểm sử dụng từ',RANGE[quick][0],'cal'),F('Thời điểm sử dụng đến',RANGE[quick][1],'cal'),VIEWSEL(),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Mã lệnh','Tất cả','dd'),F('Loại gift','Tất cả','dd'),F('Người tạo','Tất cả','dd'),F('Merchant / thương hiệu','Tất cả','dd'),F('Cửa hàng','Tất cả','dd'),F('Hình thức sử dụng','Tất cả','dd'),F('Kết quả','Tất cả (Thành công / Thất bại)','dd'),F('Giá trị sử dụng từ','0 (Tối thiểu)',''),F('Giá trị sử dụng đến','Không giới hạn','')],
-          cols:[C('serial','Serial gift'),C('code','Mã lệnh'),C('rcp','Người nhận'),C('phone','SĐT / Email'),C('type','Loại gift'),C('face','Mệnh giá',1),C('val','Giá trị sử dụng',1),C('when','Thời điểm sử dụng'),C('how','Hình thức sử dụng'),C('mc','Merchant'),C('store','Cửa hàng'),C('res','Kết quả'),C('addr','Địa chỉ cửa hàng',0,1),C('err','Lý do thất bại',0,1),C('group','Nhóm/phòng ban',0,1)],
-          rows:[['SN-8830211',st('link','LG-20261001-001'),'Nguyễn Văn A','09****321','Dùng 1 lần','500.000 đ','500.000 đ','02/10/2026 17:20','Qua kết nối Merchant','Highlands','Highlands Tràng Tiền',st('ok','Thành công'),'86 Tràng Tiền, Hà Nội','—','BMoney'],
-                ['SN-8830299',st('link','LG-20261002-003'),'Phạm Thị D','09****135','Dùng nhiều lần','200.000 đ','100.000 đ','03/10/2026 10:15','Do nội bộ thao tác','The Coffee House','TCH Nguyễn Huệ',st('ok','Thành công'),'12 Nguyễn Huệ, TP.HCM','—','Hero'],
-                ['SN-8830299',st('link','LG-20261002-003'),'Phạm Thị D','09****135','Dùng nhiều lần','200.000 đ','100.000 đ','04/10/2026 12:40','Qua kết nối Merchant','Highlands','Highlands Tràng Tiền',st('ok','Thành công'),'86 Tràng Tiền, Hà Nội','—','Hero'],
-                ['SN-8830300',st('link','LG-20261002-003'),'Hoàng Văn E','09****246','Dùng nhiều lần','200.000 đ','200.000 đ','04/10/2026 09:00','Qua kết nối Merchant','Highlands','Highlands Tràng Tiền',st('ok','Thành công'),'86 Tràng Tiền, Hà Nội','—','Hero'],
-                ['SN-8830213',st('link','LG-20261001-001'),'Lê Văn C','09****987','Dùng 1 lần','500.000 đ','0 đ','05/10/2026 11:02','Qua kết nối Merchant','Highlands','Highlands Tràng Tiền',st('red','Thất bại'),'86 Tràng Tiền, Hà Nội','Mã không hợp lệ','BMoney'],
-                ['SN-8830250',st('link','LG-20261001-001'),'Đỗ Thị G','09****579','Dùng 1 lần','500.000 đ','500.000 đ','05/10/2026 13:30','Ghi nhận bù sau đối soát','Highlands','Highlands Tràng Tiền',st('ok','Thành công'),'86 Tràng Tiền, Hà Nội','—','BMoney']]}
+              [st('link','LG-20261005-010'),'Quà đối tác','Hero',st('warn','Chờ phê duyệt'),'—','Email','15','3.000.000 đ','3.000.000 đ','0 đ','0','0','0','0','0','—','0','—','—','05/10/2026','buyer02']],
+        alt:{listTitle:'Danh sách gift đã phát hành (theo serial)',emptyMsg:'Không có gift nào phù hợp với điều kiện lọc.',search:{ph:'Tìm kiếm theo serial, mã gift, mã lệnh, tên nhóm/phòng ban, SĐT/email, tên người nhận',cols:['serial','code','rcp','phone','group']},
+          filters:()=>[F('Thời gian gửi từ',RANGE[quick][0],'cal'),F('Thời gian gửi đến',RANGE[quick][1],'cal'),VIEWSEL(),...BIZ(),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Mã lệnh','Tất cả','dd'),F('Trạng thái phát hành','Tất cả','dd'),F('Trạng thái gửi','Tất cả','dd'),F('Kênh gửi','Tất cả','dd'),F('Người tạo','Tất cả','dd'),F('Loại gift','Tất cả','dd'),F('Thương hiệu','Tất cả','dd')],
+          cols:[C('serial','Serial gift'),C('code','Mã lệnh'),C('rcp','Người nhận'),C('phone','SĐT / Email'),C('type','Loại gift'),C('brand','Thương hiệu'),C('face','Mệnh giá',1),C('istat','Trạng thái phát hành'),C('sstat','Trạng thái gửi'),C('ch','Kênh gửi'),C('chres','Kết quả từng kênh'),C('sent1','Gửi thành công đầu tiên'),C('rs','Số lần gửi lại',1),C('err','Lỗi gửi',0,1),C('group','Nhóm/phòng ban',0,1)],
+          rows:[['SN-8830211',st('link','LG-20261001-001'),'Nguyễn Văn A','0912345321','Dùng 1 lần','Highlands','500.000 đ',st('ok','Đã phát hành'),st('ok','Thành công'),'SMS, Email','SMS: Thành công · Email: Thành công','01/10/2026 09:31','0','—','BMoney'],
+                ['SN-8830212',st('link','LG-20261001-001'),'Trần Thị B','0912345654','Dùng 1 lần','Highlands','500.000 đ',st('ok','Đã phát hành'),st('red','Thất bại'),'SMS, Email','SMS: Thành công · Email: Thất bại','01/10/2026 09:31','1','Email không tồn tại','BMoney'],
+                ['SN-8830213',st('link','LG-20261001-001'),'Lê Văn C','0912345987','Dùng 1 lần','Highlands','500.000 đ',st('ok','Đã phát hành'),st('red','Thất bại'),'SMS, Email','SMS: Thất bại · Email: Thất bại','—','3','Số điện thoại sai','BMoney'],
+                ['SN-8830299',st('link','LG-20261002-003'),'Phạm Thị D','0912345135','Dùng nhiều lần','Đa thương hiệu','200.000 đ',st('ok','Đã phát hành'),st('ok','Thành công'),'ZNS','ZNS: Thành công','02/10/2026 14:06','0','—','Hero'],
+                ['SN-8830310',st('link','LG-20261005-009'),'Hoàng Văn E','0912345246','Dùng 1 lần','Highlands','200.000 đ',st('ok','Đã phát hành'),st('info','Đang gửi'),'SMS, ZNS','SMS: Thành công · ZNS: Đang gửi','05/10/2026 13:59','0','—','BMoney'],
+                ['SN-8830320',st('link','LG-20261003-005'),'Vũ Thị F','0912345468','Dùng 1 lần','Highlands','500.000 đ',st('sky','Chờ phát hành'),st('sky','Chờ gửi'),'SMS','SMS: Chờ gửi','—','0','—','BMoney']]}
+      },
+      redeem:{listTitle:'Danh sách sử dụng gift theo lệnh',emptyMsg:'Không có lệnh phân phối nào phù hợp với điều kiện lọc.',search:{ph:'Tìm kiếm theo mã lệnh, tên lệnh, tên nhóm/phòng ban, mã gift, serial, SĐT/email, tên người nhận',cols:['code','name','group']},
+        filters:()=>[F('Thời gian gửi từ',RANGE[quick][0],'cal'),F('Thời gian gửi đến',RANGE[quick][1],'cal'),VIEWSEL(),...BIZ(),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Mã lệnh','Tất cả','dd'),F('Trạng thái lệnh','Tất cả trạng thái','dd'),F('Loại gift','Tất cả','dd'),F('Người tạo','Tất cả','dd'),F('Trạng thái sử dụng','Tất cả','dd'),F('Thương hiệu','Tất cả','dd'),F('Hình thức sử dụng','Tất cả','dd')],
+        overview:[gt('Đã sử dụng',[61,26,0,0],[30500000,4600000,0,0],'info'),gt('Sử dụng một phần',[0,6,0,0],[0,600000,0,0],'sky'),gc('Chưa sử dụng',[36,22,0,0],'slate'),gc('Hết hạn',[3,2,0,0],'danger'),
+          {tbl:1,title:'Số dư còn lại',tone:'success',heads:['Phân loại','Số lượng gift','Giá trị'],rows:[['Dùng 1 lần','—','—'],['Dùng nhiều lần','28','5.000.000 đ'],['Promotion gift','—','—'],['SKU','—','—']],total:['Tổng','28','5.000.000 đ']},
+          {tbl:1,title:'Tỷ lệ redeem',tone:'info',heads:['Phân loại','Tỷ lệ'],rows:[['Dùng 1 lần','61,0%'],['Dùng nhiều lần','52,0%'],['Promotion gift','—'],['SKU','—']],total:['Tổng','58,0%']}],
+        cols:[C('code','Mã lệnh'),C('name','Tên lệnh'),C('group','Nhóm/phòng ban'),C('status','Trạng thái lệnh',0,1),C('sendt','Thời gian gửi',0,1),C('iss','Đã phát hành',1),C('used','Đã sử dụng',1),C('part','Trong đó dùng một phần',1),C('un','Chưa sử dụng',1),C('exp','Hết hạn',1),C('rate','Tỷ lệ redeem',1),C('val','Giá trị đã sử dụng',1),C('bal','Số dư còn lại',1),C('fail','Gift có redeem thất bại',1,1),C('by','Người tạo',0,1)],
+        rows:[[st('link','LG-20261001-001'),'Thưởng tháng 10','BMoney',st('red','Gửi tin lỗi'),'01/10/2026 09:30','100','61','0','36','3','61,0%','30.500.000 đ','—','2','buyer01'],
+              [st('link','LG-20261002-003'),'Quà sinh nhật Q4','Hero',st('ok','Hoàn thành'),'02/10/2026 14:05','50','26','6','22','2','52,0%','4.600.000 đ','5.000.000 đ','0','buyer02']],
+        alt:{listTitle:'Danh sách gift đã phát hành (theo serial)',emptyMsg:'Không có gift nào phù hợp với điều kiện lọc.',search:{ph:'Tìm kiếm theo serial, mã gift, mã lệnh, tên nhóm/phòng ban, SĐT/email, tên người nhận',cols:['serial','code','rcp','phone','group']},
+          filters:()=>[F('Thời gian gửi từ',RANGE[quick][0],'cal'),F('Thời gian gửi đến',RANGE[quick][1],'cal'),VIEWSEL(),...BIZ(),F('Nhóm/phòng ban','Tất cả nhóm','dd'),F('Mã lệnh','Tất cả','dd'),F('Loại gift','Tất cả','dd'),F('Người tạo','Tất cả','dd'),F('Trạng thái sử dụng','Tất cả','dd'),F('Thương hiệu','Tất cả','dd'),F('Cửa hàng','Tất cả','dd'),F('Hình thức sử dụng','Tất cả','dd'),F('Giá trị sử dụng từ','0 (Tối thiểu)',''),F('Giá trị sử dụng đến','Không giới hạn','')],
+          cols:[C('serial','Serial gift'),C('code','Mã lệnh'),C('rcp','Người nhận'),C('phone','SĐT / Email'),C('type','Loại gift'),C('face','Mệnh giá',1),C('ustate','Trạng thái sử dụng'),C('used','Giá trị đã sử dụng',1),C('bal','Số dư còn lại',1),C('sent1','Gửi thành công đầu tiên'),C('use1','Sử dụng lần đầu'),C('dur','Thời gian từ gửi đến sử dụng'),C('mc','Thương hiệu'),C('store','Cửa hàng'),C('how','Hình thức sử dụng'),C('exp','Hạn dùng',0,1),C('group','Nhóm/phòng ban',0,1)],
+          rows:[['SN-8830211',st('link','LG-20261001-001'),'Nguyễn Văn A','0912345321','Dùng 1 lần','500.000 đ',st('ok','Đã sử dụng'),'500.000 đ','—','01/10/2026 09:31','02/10/2026 17:20','1 ngày 8 giờ','Highlands','Highlands Tràng Tiền','Qua kết nối Merchant','31/12/2026','BMoney'],
+                ['SN-8830212',st('link','LG-20261001-001'),'Trần Thị B','0912345654','Dùng 1 lần','500.000 đ',st('neutral','Chưa sử dụng'),'0 đ','—','01/10/2026 09:31','—','—','—','—','—','31/12/2026','BMoney'],
+                ['SN-8830213',st('link','LG-20261001-001'),'Lê Văn C','0912345987','Dùng 1 lần','500.000 đ',st('neutral','Chưa sử dụng'),'0 đ','—','01/10/2026 09:31','—','—','—','—','—','31/12/2026','BMoney'],
+                ['SN-8830299',st('link','LG-20261002-003'),'Phạm Thị D','0912345135','Dùng nhiều lần','200.000 đ',st('info','Sử dụng một phần'),'100.000 đ','100.000 đ','02/10/2026 14:06','03/10/2026 10:15','20 giờ','Đa thương hiệu','—','Đổi qua Miniapp','31/12/2026','Hero'],
+                ['SN-8830300',st('link','LG-20261002-003'),'Hoàng Văn E','0912345246','Dùng nhiều lần','200.000 đ',st('ok','Đã sử dụng'),'200.000 đ','0 đ','02/10/2026 14:06','04/10/2026 09:00','1 ngày 19 giờ','Highlands','—','Đổi qua Link công khai','31/12/2026','Hero'],
+                ['SN-8830301',st('link','LG-20261002-003'),'Vũ Thị F','0912345468','Dùng nhiều lần','200.000 đ',st('orange','Hết hạn'),'0 đ','—','02/10/2026 14:06','—','—','—','—','—','04/10/2026','Hero']]}
       }
     }}
 };
 let page='dash',state='data',tab={budget:'alloc',egift:'issue'},exportOff=false,colOpen=false;
 const hidden={}; // key page.tab -> Set id cột đang ẩn
 let usageView='batch';
-const isGiftView=()=>page==='egift'&&tab.egift==='redeem'&&usageView==='gift';
-const keyOf=()=>page+'.'+tab[page]+(isGiftView()?'.gift':'');
-const cfgOf=()=>{const b=PAGES[page].sets[tab[page]];return isGiftView()?{...b,...b.alt}:b};
+const isGiftView=()=>page==='egift'&&usageView==='gift';
+const viewByTab={};
+const keyOf=()=>page+'.'+tab[page]+(isGiftView()?'.gift':'')+(isParent?'.p':'');
+const cfgOf=()=>{const b=PAGES[page].sets[tab[page]];const c=isGiftView()?{...b,...b.alt}:b;if(!isParent)return c;const nm=['Công ty A','Công ty B','Công ty C'];return {...c,cols:[C('biz','Doanh nghiệp',0,1),...c.cols],rows:c.rows.map((r,i)=>[nm[i%3],...r])}};
 const hiddenSet=set=>hidden[keyOf()]??(hidden[keyOf()]=new Set(set.cols.filter(c=>c.hidden).map(c=>c.id)));
 
 const plain=c=>String(c).replace(/^@[^|]*\|/,'');
 const skelRows=(n,c)=>Array.from({length:n}).map(()=>`<tr>${Array.from({length:c}).map(()=>'<td><div class="skel"></div></td>').join('')}</tr>`).join('');
-const cell=c=>{if(typeof c==='string'&&c[0]==='@'){const [t,x]=c.slice(1).split('|');if(t==='link')return `<a class="lnk" href="#" title="Mở chi tiết lệnh ${x}" onclick="event.stopPropagation();return false">${x}</a>`;const map={orange:'b-warn',hold:'b-red'};return `<span class="badge b-${t}">${x}</span>`}return c};
+const cell=c=>{if(typeof c==='string'&&c[0]==='@'){const [t,x]=c.slice(1).split('|');if(t==='link')return `<a class="lnk" href="#" title="Mở chi tiết lệnh ${x}" onclick="event.stopPropagation();__go('${x}');return false">${x}</a>`;const map={orange:'b-warn',hold:'b-red'};return `<span class="badge b-${t}">${x}</span>`}return c};
 
-// ===== Thẻ số liệu (mô phỏng egift-stat-card) =====
-const T={slate:'#475467',info:'#3a4fb3',success:'#1e7a6a',hold:'#b42318',danger:'#c2185b',sky:'#026aa2'};
-const TYPES=['Dùng 1 lần','Dùng nhiều lần','Promotion','SKU'];
-const statCard=(l,v,t,bd,hint)=>`<div class="stat"><span class="l" style="color:${T[t]}"><i></i><span style="color:var(--text-2)">${l}</span></span><div class="v">${v}</div>${hint?`<div class="h">${hint}</div>`:''}${bd?`<div class="bd">${bd.map((x,i)=>`<span class="${['0','0 đ','—'].includes(x)?'zero':''}">${TYPES[i]}</span><b class="${['0','0 đ','—'].includes(x)?'zero':''}">${x}</b>`).join('')}</div>`:''}</div>`;
+// ===== Thẻ số liệu (mô phỏng egift-stat-card): mỗi thẻ có số lượng và số tiền, chia theo loại gift =====
+const statCard=(l,v,t,sub,bd)=>`<div class="stat"><span class="l" style="color:${T[t]}"><i></i><span style="color:var(--text-2)">${l}</span></span><div class="v">${v}</div>${sub?`<div class="h" style="font-weight:600;color:var(--text)">${sub}</div>`:''}${bd?`<div class="bd">${bd.map((x,i)=>`<span class="${isZero(x)?'zero':''}">${TYPES[i]}</span><b class="${isZero(x)?'zero':''}">${x}</b>`).join('')}</div>`:''}</div>`;
+const TCOL=['#3a4fb3','#0e9f8e','#b54708','#98a2b3'];   // màu nhận diện 4 loại gift, dùng chung mọi thẻ
+const tblCard=x=>{const two=x.heads.length===2,tot=x.total||[];
+  const head=two?`<div class="big">${tot[1]??''}</div>`:`<div class="big">${tot[1]??''}<small>gift</small></div><div class="bigv">${tot[2]??''}</div>`;
+  return `<div class="stat tc"><div class="tt1"><span class="dot" style="background:${T[x.tone]}"></span>${x.title}</div><div class="hl">${head}</div>
+  <table class="mt"><thead><tr>${x.heads.map((h,i)=>`<th class="${i?'r':''}">${h}</th>`).join('')}</tr></thead><tbody>${x.rows.map((r,ri)=>`<tr class="${isZero(r[1])?'z':''}">${r.map((c,i)=>`<td class="${i?'r':''}">${i?c:`<span class="sq" style="background:${TCOL[ri]}"></span>${c}`}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`};
+const cardHtml=x=>x.tbl?tblCard(x):statCard(x[0],x[1],x[2],x[3],x[4]);
 const BUDGET=[['Tổng ngân sách','10.000.000 đ','slate'],['Đã phân bổ','6.000.000 đ','info'],['Chưa phân bổ','4.000.000 đ','success'],['Đã sử dụng','1.000.000 đ','slate'],['Đang giữ / Hold','500.000 đ','hold'],['Còn lại','8.500.000 đ','success']];
-const GIFT=[['Đã phát hành','98','slate',['60','38','0','0']],['Đã gửi','100','sky',['62','38','0','0']],['Gửi thành công','98','success',['60','38','0','0']],['Gửi thất bại','2','danger',['2','0','0','0']],['Đã redeem','61','info',['51','10','0','0']],['Giá trị redeem','30.500.000 đ','hold',['25.500.000 đ','5.000.000 đ','0 đ','0 đ']]];
-
+const GIFT=[gc('Đã phát hành',[60,38,0,0],'slate'),gc('Đã gửi',[62,38,0,0],'sky'),gc('Gửi thành công',[60,38,0,0],'success'),gc('Gửi thất bại',[2,0,0,0],'danger'),gc('Đã redeem',[51,10,0,0],'info',[25500000,5000000,0,0])];
 // ===== Line chart: chiều thời gian đổi theo bộ lọc nhanh =====
 // Hôm nay -> theo GIỜ; Tuần này -> theo NGÀY (T2..CN); Tháng này -> theo NGÀY; Tùy chọn -> theo NGÀY (>31 ngày: theo TUẦN, >12 tuần: theo THÁNG)
 function buckets(){
@@ -424,7 +494,7 @@ function renderTable(){
   if(page==='dash')return;
   const set=cfgOf(),hs=hiddenSet(set),vis=set.cols.filter(c=>!hs.has(c.id)),idx=set.cols.map(c=>c.id);
   const raw=qtext[keyOf()]||'',kw=norm(raw);
-  const shown=kw?set.rows.filter(r=>matchRow(r,set,kw)):set.rows;
+  const shown=set.rows.filter(r=>passFilters(r,set)&&matchRow(r,set,kw));
   $('#listTitle').innerHTML=set.listTitle+`<span class="cnt">${shown.length} bản ghi</span>`;
   $('#tbody').innerHTML=shown.length?shown.map(r=>`<tr style="cursor:pointer">${vis.map(c=>`<td class="${c.r?'r':''}">${cell(r[idx.indexOf(c.id)])}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${vis.length}" style="text-align:center;padding:32px;color:var(--text-2)">Không tìm thấy dữ liệu phù hợp với "${raw.replace(/</g,'&lt;')}".</td></tr>`;
   $('#pager').innerHTML=pagerHtml(shown.length);
@@ -442,18 +512,17 @@ function render(){
   // tab
   const tw=$('#tabsWrap');
   if(P.tabs){tw.classList.remove('hide');tw.innerHTML=P.tabs.map(t=>`<button class="tab ${tab[page]===t[0]?'act':''}" data-t="${t[0]}">${t[1]}</button>`).join('');
-    tw.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{tab[page]=b.dataset.t;colOpen=false;render()})}
+    tw.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{viewByTab[page+'.'+tab[page]]=usageView;tab[page]=b.dataset.t;usageView=viewByTab[page+'.'+tab[page]]||'batch';colOpen=false;render()})}
   else tw.classList.add('hide');
   // lọc nhanh
   $('#quick').innerHTML=QUICK.map(q=>`<button class="pill ${quick===q[0]?'act':''}" data-q="${q[0]}">${q[1]}</button>`).join('')+`<button class="pill ${quick==='custom'?'act':''}" data-q="custom">Tùy chọn</button>`;
-  $('#quick').querySelectorAll('.pill').forEach(b=>b.onclick=()=>{quick=b.dataset.q;render()});
+  $('#quick').querySelectorAll('.pill').forEach(b=>b.onclick=()=>{quick=b.dataset.q;const d=fdraft[keyOf()];if(d)Object.keys(d).forEach(k=>{if(typeof d[k]==='string')delete d[k]});render()});
   const kr=$('#kwRow');kr.classList.toggle('hide',isDash);
   kr.className='kw'+(isDash?' hide':'')+((qtext[keyOf()]||'')?' has':'');
   if(!isDash)kr.innerHTML=kwHtml(set.search.ph);
   const f=(isDash?P.filters():set.filters());
-  $('#filters').style.gridTemplateColumns=isDash?'repeat(2,minmax(0,1fr))':'repeat(4,minmax(0,1fr))';
+  $('#filters').style.gridTemplateColumns='repeat(4,minmax(0,1fr))';
   $('#filters').innerHTML=f.join('');
-  const vs=document.querySelector('[data-view]');if(vs&&vs.addEventListener)vs.onclick=()=>{usageView=usageView==='gift'?'batch':'gift';colOpen=false;render()};
   $('#filterHint').textContent=isDash?P.hint:set.hint;
   const qi=$('#q');
   if(qi){qi.oninput=()=>{qtext[keyOf()]=qi.value.trim();$('#kwRow').classList.toggle('has',!!qi.value);renderTable()};
@@ -462,21 +531,27 @@ function render(){
   $('#errMsg').textContent='Không tải được '+(isDash?'dashboard':'báo cáo')+'.';
   const showData=D||L;
   $('#emptyBox').classList.toggle('hide',state!=='empty');
+  $('#emptyBox').innerHTML='<div class="empty">'+((!isDash&&set&&set.emptyMsg)||'Không có dữ liệu phù hợp.')+'</div>';
   // dashboard
   $('#dash').classList.toggle('hide',!isDash||!showData);
   if(isDash){
+    $('#statsGift').style.gridTemplateColumns='repeat(3,minmax(0,1fr))';
     const sk='<div class="skelbox" style="height:64px"></div>';
-    $('#statsBudget').innerHTML=L?Array(6).fill(sk).join(''):BUDGET.map(x=>statCard(...x)).join('');
-    $('#statsGift').innerHTML=L?Array(6).fill('<div class="skelbox" style="height:140px"></div>').join(''):GIFT.map(x=>statCard(...x)).join('');
+    $('#statsBudget').innerHTML=L?Array(6).fill(sk).join(''):BUDGET.map(x=>statCard(x[0],x[1],x[2])).join('');
+    $('#statsGift').innerHTML=L?Array(5).fill('<div class="skelbox" style="height:220px"></div>').join(''):GIFT.map(cardHtml).join('');
     $('#ch1').innerHTML=L?'<div class="skelbox"></div>':line();
     $('#ch2').innerHTML=L?'<div class="skelbox"></div>':donut(GIFT_STATUS);
   }
   // tổng quan (chỉ Báo cáo ngân sách) + cảnh báo
   const ov=!isDash&&set.overview&&showData;
   $('#overview').classList.toggle('hide',!ov);
-  if(ov)$('#overview').style.gridTemplateColumns='repeat('+(set.overview.length<=5?set.overview.length:set.overview.length===6?3:4)+',minmax(0,1fr))';
-  if(ov)$('#overview').innerHTML=L?Array(5).fill('<div class="skelbox" style="height:64px"></div>').join(''):set.overview.map(x=>statCard(x[0],x[1],x[2],x[4],x[3])).join('');
-  const wb=!isDash&&set.warn&&D;$('#warnBar').classList.toggle('hide',!wb);if(wb)$('#warnBar').innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg><span>'+set.warn+'</span>';
+  if(ov)$('#overview').style.gridTemplateColumns='repeat('+(set.overview.some(x=>x.tbl)?3:(set.overview.length<=5?set.overview.length:set.overview.length===6?3:4))+',minmax(0,1fr))';
+  if(ov)$('#overview').innerHTML=L?Array(5).fill('<div class="skelbox" style="height:64px"></div>').join(''):set.overview.map(cardHtml).join('');
+  const wtxt=isDash?'Có <b>1 nhóm</b> dùng ngân sách cao bất thường: <b>BMoney</b>.':(set&&set.warn);
+  const wb=!!wtxt&&D;$('#warnBar').classList.toggle('hide',!wb);if(wb)$('#warnBar').innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg><span>'+wtxt+'</span>';
+  const showChan=!isDash&&page==='egift'&&tab.egift==='issue'&&showData;
+  $('#chanCard').classList.toggle('hide',!showChan);
+  if(showChan)$('#chanBody').innerHTML=L?'':PAGES.egift.sets.issue.channels.map(r=>'<tr>'+r.map((c,i)=>`<td class="${i?'r':''}">${c}</td>`).join('')+'</tr>').join('');
   // danh sách
   $('#listCard').classList.toggle('hide',isDash||!showData);
   if(!isDash){
@@ -490,7 +565,7 @@ function render(){
     $('#colPanel').querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{hs.clear();if(b.dataset.act==='def')set.cols.filter(c=>c.hidden).forEach(c=>hs.add(c.id));render()});
     $('#thead').innerHTML='<tr>'+vis.map(c=>`<th class="${c.r?'r':''}">${c.h}</th>`).join('')+'</tr>';
     const kw=norm(qtext[keyOf()]||'');
-    const shown=kw?set.rows.filter(r=>matchRow(r,set,kw)):set.rows;
+    const shown=set.rows.filter(r=>passFilters(r,set)&&matchRow(r,set,kw));
     $('#listTitle').innerHTML=set.listTitle+`<span class="cnt">${shown.length} bản ghi</span>`;
     $('#ovl').classList.toggle('hide',!L);
     $('#tbody').innerHTML=L?'':shown.length?shown.map(r=>`<tr style="cursor:pointer">${vis.map(c=>`<td class="${c.r?'r':''}">${cell(r[idx.indexOf(c.id)])}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${vis.length}" style="text-align:center;padding:32px;color:var(--text-2)">Không tìm thấy dữ liệu phù hợp với "${(qtext[keyOf()]||'').replace(/</g,'&lt;')}".</td></tr>`;
@@ -498,9 +573,44 @@ function render(){
   }
 }
 $('#btnCols').onclick=()=>{colOpen=!colOpen;render()};
+
+// ===== Tương tác: danh sách chọn, ô ngày/ô nhập, Tìm kiếm / Đặt lại, thông báo =====
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.remove('hide');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.add('hide'),2600)};
+globalThis.__go=code=>toast('Mở màn Chi tiết lệnh '+code+' (màn đã có sẵn trong Business Portal)');
+let ddFor=null;
+const closeDD=()=>{ddFor=null;$('#ddp').classList.add('hide')};
+const fieldText=(label)=>{const sel=fget(fdraft,label)||[];return sel.length?(sel.length<=2?sel.join(', '):sel.length+' mục đã chọn'):null};
+function openDD(el){
+  const label=el.dataset.f,single=label==='Xem theo',p=$('#ddp');ddFor=el;
+  const opts=single?[['batch','Theo lệnh'],['gift','Theo serial (từng gift)']]:optsFor(label).map(o=>[o,o]);
+  const sel=single?[usageView]:(fget(fdraft,label)||[]);
+  p.innerHTML=(opts.length?opts.map(([v,t])=>`<button class="opt ${sel.includes(v)?'on':''}" data-v="${v}">${single?'':`<span class="cb ${sel.includes(v)?'on':''}">${sel.includes(v)?'<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg>':''}</span>`}<span>${t}</span></button>`).join(''):'<div class="none">Không có lựa chọn</div>')+(single?'':'<div class="foot"><button data-clear="1">Bỏ chọn tất cả</button></div>');
+  const r=el.getBoundingClientRect();p.style.left=(r.left+scrollX)+'px';p.style.top=(r.bottom+scrollY+4)+'px';p.style.width=r.width+'px';p.classList.remove('hide');
+}
+document.addEventListener('click',e=>{
+  const t=e.target,fld=t.closest&&t.closest('.fld.sel'),panel=t.closest&&t.closest('#ddp');
+  if(panel){
+    const btn=t.closest('.opt'),clr=t.closest('[data-clear]');
+    if(!ddFor)return;const label=ddFor.dataset.f;
+    if(label==='Xem theo'&&btn){usageView=btn.dataset.v;colOpen=false;closeDD();render();return}
+    if(clr){fset(fdraft,label,[])}
+    else if(btn){const cur=(fget(fdraft,label)||[]).slice(),v=btn.dataset.v,i=cur.indexOf(v);i>=0?cur.splice(i,1):cur.push(v);fset(fdraft,label,cur)}
+    const sp=ddFor.querySelector('.v span');if(sp){const tx=fieldText(label);sp.textContent=tx||'Tất cả';sp.className=tx?'':'ph'}
+    openDD(ddFor);return}
+  if(fld){if(ddFor===fld){closeDD()}else openDD(fld);return}
+  if(ddFor)closeDD();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDD()});
+document.addEventListener('input',e=>{const t=e.target;if(t.matches&&t.matches('input.tx')){fset(fdraft,t.dataset.f,[t.value])}});
+document.addEventListener('change',e=>{const t=e.target;if(t.matches&&t.matches('input.dt')){fset(fdraft,t.dataset.f,t.value);quick='custom';document.querySelectorAll('#quick .pill').forEach(b=>b.classList.toggle('act',b.dataset.q==='custom'))}});
+$('#btnApply').onclick=()=>{fapp[keyOf()]=JSON.parse(JSON.stringify(fdraft[keyOf()]||{}));closeDD();render();toast('Đã áp dụng bộ lọc')};
+$('#btnReset').onclick=()=>{delete fdraft[keyOf()];delete fapp[keyOf()];qtext[keyOf()]='';quick='month';closeDD();render();toast('Đã đặt lại bộ lọc về mặc định')};
+$('#btnExport').onclick=()=>toast('Đang xuất Excel theo bộ lọc hiện tại…');
 document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{state=b.dataset.s;document.querySelectorAll('[data-s]').forEach(x=>x.classList.toggle('on',x===b));render()});
 document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{exportOff=b.dataset.e==='off';document.querySelectorAll('[data-e]').forEach(x=>x.classList.toggle('on',x===b));render()});
-document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{page=b.dataset.p;colOpen=false;render()});
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{viewByTab[page+'.'+tab[page]]=usageView;page=b.dataset.p;usageView=viewByTab[page+'.'+(tab[page]||'')]||'batch';colOpen=false;render()});
+(function(){const h=location.hash.slice(1).split('/');if(h[0]&&PAGES[h[0]]){page=h[0];if(h[1])tab[page]=h[1];if(h[2])usageView=h[2]}})();
+document.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{isParent=b.dataset.b==='parent';colOpen=false;document.querySelectorAll('[data-b]').forEach(x=>x.classList.toggle('on',x===b));render()});
 render();
 </script>
 </body>
